@@ -1,6 +1,9 @@
 source 'https://rubygems.org'
 gemspec
 
+gem 'ooxml_crypt'
+gem 'rubyXL'
+
 group :development, :test do
   gem 'rubocop'
 end
