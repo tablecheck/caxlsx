@@ -16,6 +16,7 @@ module Axlsx
   require 'axlsx/stylesheet/dxf.rb'
   require 'axlsx/stylesheet/xf.rb'
   require 'axlsx/stylesheet/cell_protection.rb'
+  require 'axlsx/stylesheet/theme.rb'
 
   # The Styles class manages worksheet styles
   # In addition to creating the require style objects for a valid xlsx package, this class provides the key mechanism for adding styles to your workbook, and safely applying them to the cells of your worksheet.

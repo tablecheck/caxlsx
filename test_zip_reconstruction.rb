@@ -6,12 +6,12 @@ require 'digest'
 def extract_all_files(xlsx_file, output_dir)
   FileUtils.rm_rf(output_dir) if Dir.exist?(output_dir)
   FileUtils.mkdir_p(output_dir)
-  
+
   files = []
   Zip::File.open(xlsx_file) do |zip|
     zip.each do |entry|
       next if entry.directory?
-      
+
       file_path = File.join(output_dir, entry.name)
       FileUtils.mkdir_p(File.dirname(file_path))
       entry.extract(file_path) { true }
@@ -23,11 +23,11 @@ end
 
 def create_xlsx_from_files(source_dir, output_file)
   File.delete(output_file) if File.exist?(output_file)
-  
+
   Zip::File.open(output_file, create: true) do |zip|
     Dir.glob("#{source_dir}/**/*").each do |file_path|
       next if File.directory?(file_path)
-      
+
       relative_path = file_path.gsub("#{source_dir}/", "").gsub("#{source_dir}\\", "").gsub('\\', '/')
       zip.add(relative_path, file_path)
     end
@@ -36,7 +36,7 @@ end
 
 def files_identical?(file1, file2)
   return false unless File.exist?(file1) && File.exist?(file2)
-  
+
   hash1 = Digest::MD5.hexdigest(File.read(file1))
   hash2 = Digest::MD5.hexdigest(File.read(file2))
   puts "Original RubyXL hash: #{hash1}"
@@ -45,7 +45,7 @@ def files_identical?(file1, file2)
 end
 
 puts "🧪 ZIP RECONSTRUCTION TEST"
-puts "="*50
+puts "=" * 50
 
 puts "\n1️⃣ Extracting RubyXL files..."
 files = extract_all_files('unencrypted-rubyxl.xlsx', 'rubyxl_extracted')

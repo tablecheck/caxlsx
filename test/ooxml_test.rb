@@ -145,25 +145,25 @@ class OoxmlTest < Test::Unit::TestCase
 
   def create_truly_identical_xlsx(source_file, output_file)
     puts "\n=== Creating TRULY identical XLSX by copying ALL RubyXL files ==="
-    
+
     # Start with source file as base
     FileUtils.copy(source_file, output_file)
-    
+
     # Replace ALL content with content from RubyXL version
     Zip::File.open(output_file, create: false) do |target_zip|
       Zip::File.open('unencrypted-rubyxl.xlsx') do |source_zip|
         source_zip.each do |source_entry|
           puts "  📋 Copying #{source_entry.name} from RubyXL version"
-          
+
           # Remove existing entry if present
           target_zip.remove(source_entry.name) if target_zip.find_entry(source_entry.name)
-          
+
           # Add the content from RubyXL file
           target_zip.add(source_entry.name, source_entry.get_input_stream) { true }
         end
       end
     end
-    
+
     puts "  ✅ Created truly identical file"
   rescue StandardError => e
     puts "Error creating identical XLSX: #{e.message}"
@@ -277,9 +277,9 @@ class OoxmlTest < Test::Unit::TestCase
   end
 
   def test_targeted_encryption_fixes
-    puts "\n" + "="*80
+    puts "\n" + "=" * 80
     puts "🧪 TARGETED ENCRYPTION COMPATIBILITY TESTING"
-    puts "="*80
+    puts "=" * 80
 
     # First create the base caxlsx file
     p = Axlsx::Package.new
@@ -348,41 +348,40 @@ class OoxmlTest < Test::Unit::TestCase
     })
     test_encryption_compatibility('caxlsx-full-treatment.xlsx', 'full-treatment')
 
-    puts "\n" + "="*80
+    puts "\n" + "=" * 80
     puts "🎯 ENCRYPTION COMPATIBILITY TEST RESULTS SUMMARY"
-    puts "="*80
+    puts "=" * 80
   end
 
   private
 
   def test_encryption_compatibility(file_path, test_name)
     puts "  📁 Testing: #{file_path}"
-    
+
     # First verify the unencrypted file opens in Excel
     unencrypted_works = check_excel_file_compatibility(file_path)
     puts "  📊 Unencrypted opens in Excel: #{unencrypted_works}"
-    
+
     # Try to encrypt the file
     encrypted_file = file_path.gsub('.xlsx', '-encrypted.xlsx')
     begin
       OoxmlCrypt.encrypt_file(file_path, 'test123', encrypted_file)
       puts "  🔐 Encryption: SUCCESS"
-      
+
       # Test if encrypted file opens in Excel
       encrypted_works = check_excel_file_compatibility(encrypted_file, 'test123')
       puts "  📊 Encrypted opens in Excel: #{encrypted_works}"
-      
+
       if encrypted_works
         puts "  ✅ #{test_name.upcase}: ENCRYPTION COMPATIBILITY FIXED!"
       else
         puts "  ❌ #{test_name}: Encrypted file still fails in Excel"
       end
-      
-    rescue => e
+    rescue StandardError => e
       puts "  💥 Encryption: FAILED (#{e.message})"
       puts "  ❌ #{test_name}: Cannot encrypt file"
     end
-    
+
     puts ""
   end
 end

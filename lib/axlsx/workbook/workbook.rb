@@ -43,7 +43,6 @@ module Axlsx
   require 'axlsx/workbook/workbook_views'
   require 'axlsx/workbook/worksheet/worksheet.rb'
   require 'axlsx/workbook/shared_strings_table.rb'
-  require 'axlsx/workbook/theme.rb'
   require 'axlsx/workbook/defined_name.rb'
   require 'axlsx/workbook/defined_names.rb'
   require 'axlsx/workbook/worksheet/table_style_info.rb'
