@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Axlsx
   # This class specifies data for a particular data point. It is used for both numCache and numLit object
   class NumData
@@ -23,25 +25,25 @@ module Axlsx
       @tag_name = values.first.is_a?(Cell) ? :numCache : :numLit
       values.each do |value|
         value = value.is_formula? ? 0 : value.value if value.is_a?(Cell)
-        @pt << NumVal.new(:v => value)
+        @pt << NumVal.new(v: value)
       end
     end
 
     # @see format_code
     def format_code=(v = 'General')
-      Axlsx::validate_string(v)
+      Axlsx.validate_string(v)
       @format_code = v
     end
 
     # serialize the object
-    def to_xml_string(str = "")
-      str << ('<c:' << @tag_name.to_s << '>')
-      str << ('<c:formatCode>' << format_code.to_s << '</c:formatCode>')
-      str << ('<c:ptCount val="' << @pt.size.to_s << '"/>')
+    def to_xml_string(str = +'')
+      str << '<c:' << @tag_name.to_s << '>'
+      str << '<c:formatCode>' << format_code.to_s << '</c:formatCode>'
+      str << '<c:ptCount val="' << @pt.size.to_s << '"/>'
       @pt.each_with_index do |num_val, index|
         num_val.to_xml_string index, str
       end
-      str << ('</c:' << @tag_name.to_s << '>')
+      str << '</c:' << @tag_name.to_s << '>'
     end
   end
 end

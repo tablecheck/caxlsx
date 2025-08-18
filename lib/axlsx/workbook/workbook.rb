@@ -1,65 +1,67 @@
+# frozen_string_literal: true
+
 module Axlsx
-  require 'axlsx/workbook/worksheet/sheet_calc_pr.rb'
-  require 'axlsx/workbook/worksheet/auto_filter/auto_filter.rb'
-  require 'axlsx/workbook/worksheet/date_time_converter.rb'
-  require 'axlsx/workbook/worksheet/protected_range.rb'
-  require 'axlsx/workbook/worksheet/protected_ranges.rb'
-  require 'axlsx/workbook/worksheet/rich_text_run'
-  require 'axlsx/workbook/worksheet/rich_text'
-  require 'axlsx/workbook/worksheet/cell_serializer.rb'
-  require 'axlsx/workbook/worksheet/cell.rb'
-  require 'axlsx/workbook/worksheet/page_margins.rb'
-  require 'axlsx/workbook/worksheet/page_set_up_pr.rb'
-  require 'axlsx/workbook/worksheet/outline_pr.rb'
-  require 'axlsx/workbook/worksheet/page_setup.rb'
-  require 'axlsx/workbook/worksheet/header_footer.rb'
-  require 'axlsx/workbook/worksheet/print_options.rb'
-  require 'axlsx/workbook/worksheet/cfvo.rb'
-  require 'axlsx/workbook/worksheet/cfvos.rb'
-  require 'axlsx/workbook/worksheet/color_scale.rb'
-  require 'axlsx/workbook/worksheet/data_bar.rb'
-  require 'axlsx/workbook/worksheet/icon_set.rb'
-  require 'axlsx/workbook/worksheet/conditional_formatting.rb'
-  require 'axlsx/workbook/worksheet/conditional_formatting_rule.rb'
-  require 'axlsx/workbook/worksheet/conditional_formattings.rb'
-  require 'axlsx/workbook/worksheet/row.rb'
-  require 'axlsx/workbook/worksheet/col.rb'
-  require 'axlsx/workbook/worksheet/cols.rb'
-  require 'axlsx/workbook/worksheet/comments.rb'
-  require 'axlsx/workbook/worksheet/comment.rb'
-  require 'axlsx/workbook/worksheet/merged_cells.rb'
-  require 'axlsx/workbook/worksheet/sheet_protection.rb'
-  require 'axlsx/workbook/worksheet/sheet_pr.rb'
-  require 'axlsx/workbook/worksheet/dimension.rb'
-  require 'axlsx/workbook/worksheet/sheet_data.rb'
-  require 'axlsx/workbook/worksheet/worksheet_drawing.rb'
-  require 'axlsx/workbook/worksheet/worksheet_comments.rb'
-  require 'axlsx/workbook/worksheet/worksheet_hyperlink'
-  require 'axlsx/workbook/worksheet/worksheet_hyperlinks'
-  require 'axlsx/workbook/worksheet/break'
-  require 'axlsx/workbook/worksheet/row_breaks'
-  require 'axlsx/workbook/worksheet/col_breaks'
-  require 'axlsx/workbook/workbook_view'
-  require 'axlsx/workbook/workbook_views'
-  require 'axlsx/workbook/worksheet/worksheet.rb'
-  require 'axlsx/workbook/shared_strings_table.rb'
-  require 'axlsx/workbook/defined_name.rb'
-  require 'axlsx/workbook/defined_names.rb'
-  require 'axlsx/workbook/worksheet/table_style_info.rb'
-  require 'axlsx/workbook/worksheet/table.rb'
-  require 'axlsx/workbook/worksheet/tables.rb'
-  require 'axlsx/workbook/worksheet/pivot_table_cache_definition.rb'
-  require 'axlsx/workbook/worksheet/pivot_table.rb'
-  require 'axlsx/workbook/worksheet/pivot_tables.rb'
-  require 'axlsx/workbook/worksheet/data_validation.rb'
-  require 'axlsx/workbook/worksheet/data_validations.rb'
-  require 'axlsx/workbook/worksheet/sheet_view.rb'
-  require 'axlsx/workbook/worksheet/sheet_format_pr.rb'
-  require 'axlsx/workbook/worksheet/pane.rb'
-  require 'axlsx/workbook/worksheet/selection.rb'
+  require_relative 'worksheet/sheet_calc_pr'
+  require_relative 'worksheet/auto_filter/auto_filter'
+  require_relative 'worksheet/date_time_converter'
+  require_relative 'worksheet/protected_range'
+  require_relative 'worksheet/protected_ranges'
+  require_relative 'worksheet/rich_text_run'
+  require_relative 'worksheet/rich_text'
+  require_relative 'worksheet/cell_serializer'
+  require_relative 'worksheet/cell'
+  require_relative 'worksheet/page_margins'
+  require_relative 'worksheet/page_set_up_pr'
+  require_relative 'worksheet/outline_pr'
+  require_relative 'worksheet/page_setup'
+  require_relative 'worksheet/header_footer'
+  require_relative 'worksheet/print_options'
+  require_relative 'worksheet/cfvo'
+  require_relative 'worksheet/cfvos'
+  require_relative 'worksheet/color_scale'
+  require_relative 'worksheet/data_bar'
+  require_relative 'worksheet/icon_set'
+  require_relative 'worksheet/conditional_formatting'
+  require_relative 'worksheet/conditional_formatting_rule'
+  require_relative 'worksheet/conditional_formattings'
+  require_relative 'worksheet/row'
+  require_relative 'worksheet/col'
+  require_relative 'worksheet/cols'
+  require_relative 'worksheet/comments'
+  require_relative 'worksheet/comment'
+  require_relative 'worksheet/merged_cells'
+  require_relative 'worksheet/sheet_protection'
+  require_relative 'worksheet/sheet_pr'
+  require_relative 'worksheet/dimension'
+  require_relative 'worksheet/sheet_data'
+  require_relative 'worksheet/worksheet_drawing'
+  require_relative 'worksheet/worksheet_comments'
+  require_relative 'worksheet/worksheet_hyperlink'
+  require_relative 'worksheet/worksheet_hyperlinks'
+  require_relative 'worksheet/break'
+  require_relative 'worksheet/row_breaks'
+  require_relative 'worksheet/col_breaks'
+  require_relative 'workbook_view'
+  require_relative 'workbook_views'
+  require_relative 'worksheet/worksheet'
+  require_relative 'shared_strings_table'
+  require_relative 'defined_name'
+  require_relative 'defined_names'
+  require_relative 'worksheet/table_style_info'
+  require_relative 'worksheet/table'
+  require_relative 'worksheet/tables'
+  require_relative 'worksheet/pivot_table_cache_definition'
+  require_relative 'worksheet/pivot_table'
+  require_relative 'worksheet/pivot_tables'
+  require_relative 'worksheet/data_validation'
+  require_relative 'worksheet/data_validations'
+  require_relative 'worksheet/sheet_view'
+  require_relative 'worksheet/sheet_format_pr'
+  require_relative 'worksheet/pane'
+  require_relative 'worksheet/selection'
 
   # The Workbook class is an xlsx workbook that manages worksheets, charts, drawings and styles.
-  # The following parts of the Office Open XML spreadsheet specification are not implimented in this version.
+  # The following parts of the Office Open XML spreadsheet specification are not implemented in this version.
   #
   #   bookViews
   #   calcPr
@@ -93,7 +95,7 @@ module Axlsx
 
     # @see use_shared_strings
     def use_shared_strings=(v)
-      Axlsx::validate_boolean(v)
+      Axlsx.validate_boolean(v)
       @use_shared_strings = v
     end
 
@@ -102,7 +104,7 @@ module Axlsx
     attr_reader :is_reversed
 
     def is_reversed=(v)
-      Axlsx::validate_boolean(v)
+      Axlsx.validate_boolean(v)
       @is_reversed = v
     end
 
@@ -169,7 +171,7 @@ module Axlsx
     # @see Comment
     # @return [Comments]
     def comments
-      worksheets.map { |sheet| sheet.comments }.compact
+      worksheets.map(&:comments).compact
     end
 
     # The styles associated with this workbook
@@ -201,16 +203,16 @@ module Axlsx
     # A helper to apply styles that were added using `worksheet.add_style`
     # @return [Boolean]
     def apply_styles
-      return false if !styled_cells
+      return false unless styled_cells
 
       styled_cells.each do |cell|
         current_style = styles.style_index[cell.style]
 
-        if current_style
-          new_style = Axlsx.hash_deep_merge(current_style, cell.raw_style)
-        else
-          new_style = cell.raw_style
-        end
+        new_style = if current_style
+                      Axlsx.hash_deep_merge(current_style, cell.raw_style)
+                    else
+                      cell.raw_style
+                    end
 
         cell.style = styles.add_style(new_style)
       end
@@ -221,12 +223,12 @@ module Axlsx
     # Indicates if the epoc date for serialization should be 1904. If false, 1900 is used.
     @@date1904 = false
 
-    # A quick helper to retrive a worksheet by name
+    # A quick helper to retrieve a worksheet by name
     # @param [String] name The name of the sheet you are looking for
     # @return [Worksheet] The sheet found, or nil
     def sheet_by_name(name)
-      index = @worksheets.index { |sheet| sheet.name == name }
-      @worksheets[index] if index
+      encoded_name = Axlsx.coder.encode(name)
+      @worksheets.find { |sheet| sheet.name == encoded_name }
     end
 
     # Creates a new Workbook.
@@ -253,18 +255,28 @@ module Axlsx
 
     # Instance level access to the class variable 1904
     # @return [Boolean]
-    def date1904() @@date1904; end
+    def date1904
+      @@date1904
+    end
 
     # see @date1904
-    def date1904=(v) Axlsx::validate_boolean v; @@date1904 = v; end
+    def date1904=(v)
+      Axlsx.validate_boolean v
+      @@date1904 = v
+    end
 
     # Sets the date1904 attribute to the provided boolean
     # @return [Boolean]
-    def self.date1904=(v) Axlsx::validate_boolean v; @@date1904 = v; end
+    def self.date1904=(v)
+      Axlsx.validate_boolean v
+      @@date1904 = v
+    end
 
     # retrieves the date1904 attribute
     # @return [Boolean]
-    def self.date1904() @@date1904; end
+    def self.date1904
+      @@date1904
+    end
 
     # Whether to treat values starting with an equals sign as formulas or as literal strings.
     # Allowing user-generated data to be interpreted as formulas is a security risk.
@@ -284,10 +296,13 @@ module Axlsx
     #     calculation. Thus the performance benefits of turning this off are
     #     marginal unless you are creating a very large sheet.
     # @return [Boolean]
-    def use_autowidth() @use_autowidth; end
+    attr_reader :use_autowidth
 
     # see @use_autowidth
-    def use_autowidth=(v = true) Axlsx::validate_boolean v; @use_autowidth = v; end
+    def use_autowidth=(v = true)
+      Axlsx.validate_boolean v
+      @use_autowidth = v
+    end
 
     # Font size of bold fonts is multiplied with this
     # Used for automatic calculation of cell widths with bold text
@@ -295,7 +310,7 @@ module Axlsx
     attr_reader :bold_font_multiplier
 
     def bold_font_multiplier=(v)
-      Axlsx::validate_float v
+      Axlsx.validate_float v
       @bold_font_multiplier = v
     end
 
@@ -305,7 +320,7 @@ module Axlsx
     attr_reader :font_scale_divisor
 
     def font_scale_divisor=(v)
-      Axlsx::validate_float v
+      Axlsx.validate_float v
       @font_scale_divisor = v
     end
 
@@ -358,10 +373,10 @@ module Axlsx
     def relationships
       r = Relationships.new
       @worksheets.each do |sheet|
-        r << Relationship.new(sheet, WORKSHEET_R, WORKSHEET_PN % (r.size + 1))
+        r << Relationship.new(sheet, WORKSHEET_R, format(WORKSHEET_PN, r.size + 1))
       end
       pivot_tables.each_with_index do |pivot_table, index|
-        r << Relationship.new(pivot_table.cache_definition, PIVOT_TABLE_CACHE_DEFINITION_R, PIVOT_TABLE_CACHE_DEFINITION_PN % (index + 1))
+        r << Relationship.new(pivot_table.cache_definition, PIVOT_TABLE_CACHE_DEFINITION_R, format(PIVOT_TABLE_CACHE_DEFINITION_PN, index + 1))
       end
       r << Relationship.new(self, STYLES_R, STYLES_PN)
       r << Relationship.new(self, THEME_R, THEME_PN)
@@ -374,11 +389,11 @@ module Axlsx
     # generates a shared string object against all cells in all worksheets.
     # @return [SharedStringTable]
     def shared_strings
-      SharedStringsTable.new(worksheets.collect { |ws| ws.cells }, xml_space)
+      SharedStringsTable.new(worksheets.collect(&:cells), xml_space)
     end
 
     # The xml:space attribute for the worksheet.
-    # This determines how whitespace is handled withing the document.
+    # This determines how whitespace is handled within the document.
     # The most relevant part being whitespace in the cell text.
     # allowed values are :preserve and :default. Axlsx uses :preserve unless
     # you explicily set this to :default.
@@ -396,12 +411,12 @@ module Axlsx
     end
 
     # returns a range of cells in a worksheet
-    # @param [String] cell_def The excel style reference defining the worksheet and cells. The range must specify the sheet to
+    # @param [String] cell_def The Excel style reference defining the worksheet and cells. The range must specify the sheet to
     # retrieve the cells from. e.g. range('Sheet1!A1:B2') will return an array of four cells [A1, A2, B1, B2] while range('Sheet1!A1') will return a single Cell.
     # @return [Cell, Array]
     def [](cell_def)
-      sheet_name = cell_def.split('!')[0] if cell_def.match('!')
-      worksheet =  self.worksheets.select { |s| s.name == sheet_name }.first
+      sheet_name = cell_def.split('!')[0] if cell_def.include?('!')
+      worksheet =  worksheets.find { |s| s.name == sheet_name }
       raise ArgumentError, 'Unknown Sheet' unless sheet_name && worksheet.is_a?(Worksheet)
 
       worksheet[cell_def.gsub(/.+!/, "")]
@@ -410,11 +425,11 @@ module Axlsx
     # Serialize the workbook
     # @param [String] str
     # @return [String]
-    def to_xml_string(str = '')
-      add_worksheet(name: 'Sheet1') unless worksheets.size > 0
+    def to_xml_string(str = +'')
+      add_worksheet(name: 'Sheet1') if worksheets.empty?
       str << '<?xml version="1.0" encoding="UTF-8"?>'
-      str << ('<workbook xmlns="' << XML_NS << '" xmlns:r="' << XML_NS_R << '">')
-      str << ('<workbookPr date1904="' << @@date1904.to_s << '"/>')
+      str << '<workbook xmlns="' << XML_NS << '" xmlns:r="' << XML_NS_R << '">'
+      str << '<workbookPr date1904="' << @@date1904.to_s << '"/>'
       views.to_xml_string(str)
       str << '<sheets>'
       if is_reversed
@@ -427,7 +442,7 @@ module Axlsx
       unless pivot_tables.empty?
         str << '<pivotCaches>'
         pivot_tables.each do |pivot_table|
-          str << ('<pivotCache cacheId="' << pivot_table.cache_definition.cache_id.to_s << '" r:id="' << pivot_table.cache_definition.rId << '"/>')
+          str << '<pivotCache cacheId="' << pivot_table.cache_definition.cache_id.to_s << '" r:id="' << pivot_table.cache_definition.rId << '"/>'
         end
         str << '</pivotCaches>'
       end

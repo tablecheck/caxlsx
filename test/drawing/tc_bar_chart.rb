@@ -1,78 +1,78 @@
-require 'tc_helper.rb'
+# frozen_string_literal: true
 
-class TestBarChart < Test::Unit::TestCase
+require 'tc_helper'
+
+class TestBarChart < Minitest::Test
   def setup
     @p = Axlsx::Package.new
     ws = @p.workbook.add_worksheet
     @row = ws.add_row ["one", 1, Time.now]
-    @chart = ws.add_chart Axlsx::BarChart, :title => "fishery"
+    @chart = ws.add_chart Axlsx::BarChart, title: "fishery"
   end
 
-  def teardown
-  end
+  def teardown; end
 
   def test_initialization
-    assert_equal(@chart.grouping, :clustered, "grouping defualt incorrect")
+    assert_equal(:clustered, @chart.grouping, "grouping default incorrect")
     assert_equal(@chart.series_type, Axlsx::BarSeries, "series type incorrect")
-    assert_equal(@chart.bar_dir, :bar, " bar direction incorrect")
-    assert(@chart.cat_axis.is_a?(Axlsx::CatAxis), "category axis not created")
-    assert(@chart.val_axis.is_a?(Axlsx::ValAxis), "value access not created")
+    assert_equal(:bar, @chart.bar_dir, " bar direction incorrect")
+    assert_kind_of(Axlsx::CatAxis, @chart.cat_axis, "category axis not created")
+    assert_kind_of(Axlsx::ValAxis, @chart.val_axis, "value access not created")
   end
 
   def test_bar_direction
-    assert_raise(ArgumentError, "require valid bar direction") { @chart.bar_dir = :left }
-    assert_nothing_raised("allow valid bar direction") { @chart.bar_dir = :col }
-    assert(@chart.bar_dir == :col)
+    assert_raises(ArgumentError, "require valid bar direction") { @chart.bar_dir = :left }
+    refute_raises { @chart.bar_dir = :col }
+    assert_equal(:col, @chart.bar_dir)
   end
 
   def test_grouping
-    assert_raise(ArgumentError, "require valid grouping") { @chart.grouping = :inverted }
-    assert_nothing_raised("allow valid grouping") { @chart.grouping = :standard }
-    assert(@chart.grouping == :standard)
+    assert_raises(ArgumentError, "require valid grouping") { @chart.grouping = :inverted }
+    refute_raises { @chart.grouping = :standard }
+    assert_equal(:standard, @chart.grouping)
   end
 
   def test_gap_width
-    assert_raise(ArgumentError, "require valid gap width") { @chart.gap_width = -1 }
-    assert_raise(ArgumentError, "require valid gap width") { @chart.gap_width = 501 }
-    assert_nothing_raised("allow valid gap width") { @chart.gap_width = 200 }
-    assert_equal(@chart.gap_width, 200, 'gap width is incorrect')
+    assert_raises(ArgumentError, "require valid gap width") { @chart.gap_width = -1 }
+    assert_raises(ArgumentError, "require valid gap width") { @chart.gap_width = 501 }
+    refute_raises { @chart.gap_width = 200 }
+    assert_equal(200, @chart.gap_width, 'gap width is incorrect')
   end
 
   def test_overlap
-    assert_raise(ArgumentError, "require valid overlap") { @chart.overlap = -101 }
-    assert_raise(ArgumentError, "require valid overlap") { @chart.overlap = 101 }
-    assert_nothing_raised("allow valid overlap") { @chart.overlap = 100 }
-    assert_equal(@chart.overlap, 100, 'overlap is incorrect')
+    assert_raises(ArgumentError, "require valid overlap") { @chart.overlap = -101 }
+    assert_raises(ArgumentError, "require valid overlap") { @chart.overlap = 101 }
+    refute_raises { @chart.overlap = 100 }
+    assert_equal(100, @chart.overlap, 'overlap is incorrect')
   end
 
   def test_shape
-    assert_raise(ArgumentError, "require valid shape") { @chart.shape = :star }
-    assert_nothing_raised("allow valid shape") { @chart.shape = :cone }
-    assert(@chart.shape == :cone)
+    assert_raises(ArgumentError, "require valid shape") { @chart.shape = :star }
+    refute_raises { @chart.shape = :cone }
+    assert_equal(:cone, @chart.shape)
   end
 
   def test_to_xml_string
     schema = Nokogiri::XML::Schema(File.open(Axlsx::DRAWING_XSD))
     doc = Nokogiri::XML(@chart.to_xml_string)
-    errors = []
-    schema.validate(doc).each do |error|
-      errors.push error
-      puts error.message
-    end
-    assert(errors.empty?, "error free validation")
+    errors = schema.validate(doc)
+
+    assert_empty(errors)
   end
 
   def test_to_xml_string_has_axes_in_correct_order
     str = @chart.to_xml_string
     cat_axis_position = str.index(@chart.axes[:cat_axis].id.to_s)
     val_axis_position = str.index(@chart.axes[:val_axis].id.to_s)
-    assert(cat_axis_position < val_axis_position, "cat_axis must occur earlier than val_axis in the XML")
+
+    assert_operator(cat_axis_position, :<, val_axis_position, "cat_axis must occur earlier than val_axis in the XML")
   end
 
   def test_to_xml_string_has_gap_width
     gap_width_value = rand(0..500)
     @chart.gap_width = gap_width_value
     doc = Nokogiri::XML(@chart.to_xml_string)
+
     assert_equal(doc.xpath("//c:barChart/c:gapWidth").first.attribute('val').value, gap_width_value.to_s)
   end
 
@@ -80,6 +80,20 @@ class TestBarChart < Test::Unit::TestCase
     overlap_value = rand(-100..100)
     @chart.overlap = overlap_value
     doc = Nokogiri::XML(@chart.to_xml_string)
+
     assert_equal(doc.xpath("//c:barChart/c:overlap").first.attribute('val').value, overlap_value.to_s)
+  end
+
+  def test_cat_axis_position_for_horizontal_bar_chart
+    axes = @chart.axes
+
+    assert_equal(:l, axes[:cat_axis].ax_pos, "cat_axis.ax_pos must be :l for horizontal bar charts")
+  end
+
+  def test_val_axis_position_for_vertical_bar_chart
+    @chart.bar_dir = :col
+    axes = @chart.axes
+
+    assert_equal(:l, axes[:val_axis].ax_pos, "val_axis.ax_pos must be :l for vertical bar charts")
   end
 end

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 #  <definedNames>
 #    <definedName name="_xlnm.Print_Titles" localSheetId="0">Sheet1!$1:$1</definedName>
 #  </definedNames>
@@ -20,7 +22,7 @@
 # <xsd:attribute name="shortcutKey" type="s:ST_Xstring" use="optional"/>
 # <xsd:attribute name="publishToServer" type="xsd:boolean" use="optional"￼ default="false"/>
 # <xsd:attribute name="workbookParameter" type="xsd:boolean" use="optional" default="false"/>
-# </xsd:extenstion>
+# </xsd:extension>
 # </xsd:simpleContent>
 
 module Axlsx
@@ -52,6 +54,7 @@ module Axlsx
     include Axlsx::SerializedAttributes
     include Axlsx::OptionsParser
     include Axlsx::Accessors
+
     # creates a new DefinedName.
     # @param [String] formula - the formula the defined name references
     # @param [Hash] options - A hash of key/value pairs that will be mapped to this instances attributes.
@@ -107,7 +110,7 @@ module Axlsx
     # The local sheet index (0-based)
     # @param [Integer] value the unsigned integer index of the sheet this defined_name applies to.
     def local_sheet_id=(value)
-      Axlsx::validate_unsigned_int(value)
+      Axlsx.validate_unsigned_int(value)
       @local_sheet_id = value
     end
 
@@ -118,12 +121,12 @@ module Axlsx
     serializable_attributes :short_cut_key, :status_bar, :help, :description, :custom_menu, :comment,
                             :workbook_parameter, :publish_to_server, :xlm, :vb_proceedure, :function, :hidden, :local_sheet_id
 
-    def to_xml_string(str = '')
+    def to_xml_string(str = +'')
       raise ArgumentError, 'you must specify the name for this defined name. Please read the documentation for Axlsx::DefinedName for more details' unless name
 
-      str << ('<definedName ' << 'name="' << name << '" ')
+      str << '<definedName ' << 'name="' << name << '" '
       serialized_attributes str
-      str << ('>' << @formula << '</definedName>')
+      str << '>' << @formula << '</definedName>'
     end
   end
 end

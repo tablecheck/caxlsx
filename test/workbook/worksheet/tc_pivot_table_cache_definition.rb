@@ -1,6 +1,8 @@
-require 'tc_helper.rb'
+# frozen_string_literal: true
 
-class TestPivotTableCacheDefinition < Test::Unit::TestCase
+require 'tc_helper'
+
+class TestPivotTableCacheDefinition < Minitest::Test
   def setup
     p = Axlsx::Package.new
     @ws = p.workbook.add_worksheet
@@ -12,7 +14,7 @@ class TestPivotTableCacheDefinition < Test::Unit::TestCase
   end
 
   def test_initialization
-    assert(@cache_definition.is_a?(Axlsx::PivotTableCacheDefinition), "must create a pivot table cache definition")
+    assert_kind_of(Axlsx::PivotTableCacheDefinition, @cache_definition, "must create a pivot table cache definition")
     assert_equal(@pivot_table, @cache_definition.pivot_table, 'refers back to its pivot table')
   end
 
@@ -37,18 +39,15 @@ class TestPivotTableCacheDefinition < Test::Unit::TestCase
     data_sheet.name = "Pivot Table Data Source"
     @pivot_table.data_sheet = data_sheet
 
-    assert(@cache_definition.to_xml_string.include?(data_sheet.name), "must set the data source correctly")
+    assert_includes(@cache_definition.to_xml_string, data_sheet.name, "must set the data source correctly")
   end
 
   def test_to_xml_string
     schema = Nokogiri::XML::Schema(File.open(Axlsx::SML_XSD))
     doc = Nokogiri::XML(@cache_definition.to_xml_string)
-    errors = []
-    schema.validate(doc).each do |error|
-      errors.push error
-      puts error.message
-    end
-    assert(errors.empty?, "error free validation")
+    errors = schema.validate(doc)
+
+    assert_empty(errors)
   end
 
   def test_to_xml_string_for_special_characters
@@ -56,7 +55,7 @@ class TestPivotTableCacheDefinition < Test::Unit::TestCase
     cell.value = "&><'\""
 
     doc = Nokogiri::XML(@cache_definition.to_xml_string)
-    errors = doc.errors
-    assert(errors.empty?, "invalid xml: #{errors.map(&:to_s).join(', ')}")
+
+    assert_empty(doc.errors)
   end
 end

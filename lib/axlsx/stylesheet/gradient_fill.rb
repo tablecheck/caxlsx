@@ -1,5 +1,7 @@
+# frozen_string_literal: true
+
 module Axlsx
-  # A GradientFill defines the color and positioning for gradiant cell fill.
+  # A GradientFill defines the color and positioning for gradient cell fill.
   # @see Open Office XML Part 1 §18.8.24
   class GradientFill
     include Axlsx::OptionsParser
@@ -53,10 +55,16 @@ module Axlsx
     attr_reader :stop
 
     # @see type
-    def type=(v) Axlsx::validate_gradient_type v; @type = v end
+    def type=(v)
+      Axlsx.validate_gradient_type v
+      @type = v
+    end
 
     # @see degree
-    def degree=(v) Axlsx::validate_float v; @degree = v end
+    def degree=(v)
+      Axlsx.validate_float v
+      @degree = v
+    end
 
     # @see left
     def left=(v)
@@ -84,13 +92,13 @@ module Axlsx
 
     # validates that the value provided is between 0.0 and 1.0
     def validate_format_percentage(name, value)
-      DataTypeValidator.validate name, Float, value, lambda { |arg| arg >= 0.0 && arg <= 1.0 }
+      DataTypeValidator.validate name, Float, value, ->(arg) { arg >= 0.0 && arg <= 1.0 }
     end
 
     # Serializes the object
     # @param [String] str
     # @return [String]
-    def to_xml_string(str = '')
+    def to_xml_string(str = +'')
       str << '<gradientFill '
       serialized_attributes str
       str << '>'

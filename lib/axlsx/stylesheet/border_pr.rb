@@ -1,11 +1,14 @@
+# frozen_string_literal: true
+
 module Axlsx
   # A border part.
   class BorderPr
     include Axlsx::OptionsParser
+
     # @return [Color] The color of this border part.
     attr_reader :color
 
-    # @return [Symbol] The syle of this border part.
+    # @return [Symbol] The style of this border part.
     # @note
     #  The following are allowed
     #   :none
@@ -51,19 +54,30 @@ module Axlsx
     end
 
     # @see name
-    def name=(v) RestrictionValidator.validate "BorderPr.name", [:start, :end, :left, :right, :top, :bottom, :diagonal, :vertical, :horizontal], v; @name = v end
+    def name=(v)
+      RestrictionValidator.validate "BorderPr.name", [:start, :end, :left, :right, :top, :bottom, :diagonal, :vertical, :horizontal], v
+      @name = v
+    end
+
     # @see color
-    def color=(v) DataTypeValidator.validate(:color, Color, v); @color = v end
+    def color=(v)
+      DataTypeValidator.validate(:color, Color, v)
+      @color = v
+    end
+
     # @see style
-    def style=(v) RestrictionValidator.validate "BorderPr.style", [:none, :thin, :medium, :dashed, :dotted, :thick, :double, :hair, :mediumDashed, :dashDot, :mediumDashDot, :dashDotDot, :mediumDashDotDot, :slantDashDot], v; @style = v end
+    def style=(v)
+      RestrictionValidator.validate "BorderPr.style", [:none, :thin, :medium, :dashed, :dotted, :thick, :double, :hair, :mediumDashed, :dashDot, :mediumDashDot, :dashDotDot, :mediumDashDotDot, :slantDashDot], v
+      @style = v
+    end
 
     # Serializes the object
     # @param [String] str
     # @return [String]
-    def to_xml_string(str = '')
-      str << ('<' << @name.to_s << ' style="' << @style.to_s << '">')
+    def to_xml_string(str = +'')
+      str << '<' << @name.to_s << ' style="' << @style.to_s << '">'
       @color.to_xml_string(str) if @color.is_a?(Color)
-      str << ('</' << @name.to_s << '>')
+      str << '</' << @name.to_s << '>'
     end
   end
 end

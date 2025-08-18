@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Axlsx
   # Conditional Format Rule icon sets
   # Describes an icon set conditional formatting rule.
@@ -18,8 +20,10 @@ module Axlsx
       @percent = @showValue = true
       @reverse = false
       @iconSet = "3TrafficLights1"
-      initialize_value_objects
+      @interpolationPoints = [0, 33, 67]
+
       parse_options options
+
       yield self if block_given?
     end
 
@@ -32,7 +36,7 @@ module Axlsx
     attr_reader :iconSet
 
     # Indicates whether the thresholds indicate percentile values, instead of number values.
-    # The default falue is true
+    # The default value is true
     # @return [Boolean]
     attr_reader :percent
 
@@ -46,22 +50,48 @@ module Axlsx
     # @return [Boolean]
     attr_reader :showValue
 
+    # Sets the values of the interpolation points in the scale.
+    # The default value is [0, 33, 67]
+    # @return [Integer]
+    attr_reader :interpolationPoints
+
     # @see iconSet
-    def iconSet=(v); Axlsx::validate_icon_set(v); @iconSet = v end
+    def iconSet=(v)
+      Axlsx.validate_icon_set(v)
+      @iconSet = v
+    end
+
+    # @see interpolationPoints
+    def interpolationPoints=(v)
+      v.each { |point| Axlsx.validate_int(point) }
+      @value_objects = nil
+      @interpolationPoints = v
+    end
 
     # @see showValue
-    def showValue=(v); Axlsx.validate_boolean(v); @showValue = v end
+    def showValue=(v)
+      Axlsx.validate_boolean(v)
+      @showValue = v
+    end
 
     # @see percent
-    def percent=(v); Axlsx.validate_boolean(v); @percent = v end
+    def percent=(v)
+      Axlsx.validate_boolean(v)
+      @percent = v
+    end
 
     # @see reverse
-    def reverse=(v); Axlsx.validate_boolean(v); @reverse = v end
+    def reverse=(v)
+      Axlsx.validate_boolean(v)
+      @reverse = v
+    end
 
     # Serialize this object to an xml string
     # @param [String] str
     # @return [String]
-    def to_xml_string(str = "")
+    def to_xml_string(str = +'')
+      initialize_value_objects if @value_objects.nil?
+
       serialized_tag('iconSet', str) do
         @value_objects.each { |cfvo| cfvo.to_xml_string(str) }
       end
@@ -69,11 +99,10 @@ module Axlsx
 
     private
 
-    # Initalize the simple typed list of value objects
-    # I am keeping this private for now as I am not sure what impact changes to the required two cfvo objects will do.
+    # Initialize the simple typed list of value objects
     def initialize_value_objects
       @value_objects = SimpleTypedList.new Cfvo
-      @value_objects.concat [Cfvo.new(:type => :percent, :val => 0), Cfvo.new(:type => :percent, :val => 33), Cfvo.new(:type => :percent, :val => 67)]
+      @interpolationPoints.each { |point| @value_objects << Cfvo.new(type: :percent, val: point) }
       @value_objects.lock
     end
   end

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Axlsx
   # The Axes class creates and manages axis information and
   # serialization for charts.
@@ -7,14 +9,14 @@ module Axlsx
     # class of the axis type to construct. The :cat_axis, if there is one,
     # must come first (we assume a Ruby 1.9+ Hash or an OrderedHash).
     def initialize(options = {})
-      raise(ArgumentError, "CatAxis must come first") if options.keys.include?(:cat_axis) && options.keys.first != :cat_axis
+      raise(ArgumentError, "CatAxis must come first") if options.key?(:cat_axis) && options.keys.first != :cat_axis
 
       options.each do |name, axis_class|
         add_axis(name, axis_class)
       end
     end
 
-    # [] provides assiciative access to a specic axis store in an axes
+    # [] provides associative access to a specific axis store in an axes
     # instance.
     # @return [Axis]
     def [](name)
@@ -27,11 +29,11 @@ module Axlsx
     # @option options ids
     # If the ids option is specified only the axis identifier is
     # serialized. Otherwise, each axis is serialized in full.
-    def to_xml_string(str = '', options = {})
+    def to_xml_string(str = +'', options = {})
       if options[:ids]
         # CatAxis must come first in the XML (for Microsoft Excel at least)
-        sorted = axes.sort_by { |name, axis| axis.kind_of?(CatAxis) ? 0 : 1 }
-        sorted.each { |axis| str << ('<c:axId val="' << axis[1].id.to_s << '"/>') }
+        sorted = axes.sort_by { |_name, axis| axis.is_a?(CatAxis) ? 0 : 1 }
+        sorted.each { |axis| str << '<c:axId val="' << axis[1].id.to_s << '"/>' }
       else
         axes.each { |axis| axis[1].to_xml_string(str) }
       end

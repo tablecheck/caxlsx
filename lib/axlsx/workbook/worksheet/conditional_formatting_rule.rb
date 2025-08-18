@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Axlsx
   # Conditional formatting rules specify formulas whose evaluations
   # format cells
@@ -22,7 +24,7 @@ module Axlsx
     # @option options [Integer] rank If a top/bottom N rule, the value of N
     # @option options [Integer] stdDev The number of standard deviations above or below the average to match
     # @option options [Boolean] stopIfTrue Stop evaluating rules after this rule matches
-    # @option options [Symbol]  timePeriod The time period in a date occuring... rule
+    # @option options [Symbol]  timePeriod The time period in a date occurring... rule
     # @option options [String] formula The formula to match against in i.e. an equal rule. Use a [minimum, maximum] array for cellIs between/notBetween conditionals.
     def initialize(options = {})
       @color_scale = @data_bar = @icon_set = @formula = nil
@@ -153,33 +155,88 @@ module Axlsx
     end
 
     # @see type
-    def type=(v); Axlsx::validate_conditional_formatting_type(v); @type = v end
+    def type=(v)
+      Axlsx.validate_conditional_formatting_type(v)
+      @type = v
+    end
+
     # @see aboveAverage
-    def aboveAverage=(v); Axlsx::validate_boolean(v); @aboveAverage = v end
+    def aboveAverage=(v)
+      Axlsx.validate_boolean(v)
+      @aboveAverage = v
+    end
+
     # @see bottom
-    def bottom=(v); Axlsx::validate_boolean(v); @bottom = v end
+    def bottom=(v)
+      Axlsx.validate_boolean(v)
+      @bottom = v
+    end
+
     # @see dxfId
-    def dxfId=(v); Axlsx::validate_unsigned_numeric(v); @dxfId = v end
+    def dxfId=(v)
+      Axlsx.validate_unsigned_numeric(v)
+      @dxfId = v
+    end
+
     # @see equalAverage
-    def equalAverage=(v); Axlsx::validate_boolean(v); @equalAverage = v end
+    def equalAverage=(v)
+      Axlsx.validate_boolean(v)
+      @equalAverage = v
+    end
+
     # @see priority
-    def priority=(v); Axlsx::validate_unsigned_numeric(v); @priority = v end
+    def priority=(v)
+      Axlsx.validate_unsigned_numeric(v)
+      @priority = v
+    end
+
     # @see operator
-    def operator=(v); Axlsx::validate_conditional_formatting_operator(v); @operator = v end
+    def operator=(v)
+      Axlsx.validate_conditional_formatting_operator(v)
+      @operator = v
+    end
+
     # @see text
-    def text=(v); Axlsx::validate_string(v); @text = v end
+    def text=(v)
+      Axlsx.validate_string(v)
+      @text = v
+    end
+
     # @see percent
-    def percent=(v); Axlsx::validate_boolean(v); @percent = v end
+    def percent=(v)
+      Axlsx.validate_boolean(v)
+      @percent = v
+    end
+
     # @see rank
-    def rank=(v); Axlsx::validate_unsigned_numeric(v); @rank = v end
+    def rank=(v)
+      Axlsx.validate_unsigned_numeric(v)
+      @rank = v
+    end
+
     # @see stdDev
-    def stdDev=(v); Axlsx::validate_unsigned_numeric(v); @stdDev = v end
+    def stdDev=(v)
+      Axlsx.validate_unsigned_numeric(v)
+      @stdDev = v
+    end
+
     # @see stopIfTrue
-    def stopIfTrue=(v); Axlsx::validate_boolean(v); @stopIfTrue = v end
+    def stopIfTrue=(v)
+      Axlsx.validate_boolean(v)
+      @stopIfTrue = v
+    end
+
     # @see timePeriod
-    def timePeriod=(v); Axlsx::validate_time_period_type(v); @timePeriod = v end
+    def timePeriod=(v)
+      Axlsx.validate_time_period_type(v)
+      @timePeriod = v
+    end
+
     # @see formula
-    def formula=(v); [*v].each { |x| Axlsx::validate_string(x) }; @formula = [*v].map { |form| ::CGI.escapeHTML(form) } end
+    def formula=(v)
+      [*v].each { |x| Axlsx.validate_string(x) }
+      @formula = [*v].map { |form| ::CGI.escapeHTML(form) }
+    end
 
     # @see color_scale
     def color_scale=(v)
@@ -202,11 +259,11 @@ module Axlsx
     # Serializes the conditional formatting rule
     # @param [String] str
     # @return [String]
-    def to_xml_string(str = '')
+    def to_xml_string(str = +'')
       str << '<cfRule '
       serialized_attributes str
       str << '>'
-      str << ('<formula>' << [*self.formula].join('</formula><formula>') << '</formula>') if @formula
+      str << '<formula>' << [*formula].join('</formula><formula>') << '</formula>' if @formula
       @color_scale.to_xml_string(str) if @color_scale && @type == :colorScale
       @data_bar.to_xml_string(str) if @data_bar && @type == :dataBar
       @icon_set.to_xml_string(str) if @icon_set && @type == :iconSet

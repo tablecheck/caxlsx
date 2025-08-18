@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Axlsx
   # The table style info class manages style attributes for defined tables in
   # a worksheet
@@ -5,6 +7,7 @@ module Axlsx
     include Axlsx::OptionsParser
     include Axlsx::SerializedAttributes
     include Axlsx::Accessors
+
     # creates a new TableStyleInfo instance
     # @param [Hash] options
     # @option [Boolean] show_first_column indicates if the first column should
@@ -32,16 +35,16 @@ module Axlsx
     # explicitly be disabled or all will show.
     def initialize_defaults
       %w(show_first_column show_last_column show_row_stripes show_column_stripes).each do |attr|
-        self.send("#{attr}=", 0)
+        send(:"#{attr}=", 0)
       end
     end
 
     # The name of the table style.
     attr_accessor :name
 
-    # seralizes this object to an xml string
+    # serializes this object to an xml string
     # @param [String] str the string to contact this objects serialization to.
-    def to_xml_string(str = '')
+    def to_xml_string(str = +'')
       serialized_tag('tableStyleInfo', str)
     end
   end

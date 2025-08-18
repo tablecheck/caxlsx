@@ -1,9 +1,11 @@
+# frozen_string_literal: true
+
 module Axlsx
-  # A wraper class for comments that defines its on worksheet
-  # serailization
+  # A wrapper class for comments that defines its on worksheet
+  # serialization
   class WorksheetComments
     # Creates a new WorksheetComments object
-    # param [Worksheet] worksheet The worksheet comments in thes object belong to
+    # param [Worksheet] worksheet The worksheet to which the comments belong
     def initialize(worksheet)
       raise ArugumentError, 'You must provide a worksheet' unless worksheet.is_a?(Worksheet)
 
@@ -35,7 +37,7 @@ module Axlsx
 
     # Helper method to tell us if there are comments in the comments collection
     # @return [Boolean]
-    def has_comments?
+    def has_comments? # rubocop:disable Naming/PredicatePrefix
       !comments.empty?
     end
 
@@ -49,7 +51,7 @@ module Axlsx
     # Seraalize the object
     # @param [String] str
     # @return [String]
-    def to_xml_string(str = '')
+    def to_xml_string(str = +'')
       return unless has_comments?
 
       str << "<legacyDrawing r:id='#{drawing_rId}' />"

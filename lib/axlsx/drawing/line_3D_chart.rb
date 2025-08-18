@@ -1,5 +1,7 @@
+# frozen_string_literal: true
+
 module Axlsx
-  # The Line3DChart is a three dimentional line chart (who would have guessed?) that you can add to your worksheet.
+  # The Line3DChart is a three dimensional line chart (who would have guessed?) that you can add to your worksheet.
   # @example Creating a chart
   #   # This example creates a line in a single sheet.
   #   require "rubygems" # if that is your preferred way to manage gems!
@@ -24,7 +26,7 @@ module Axlsx
     alias :gapDepth :gap_depth
 
     # validation regex for gap amount percent
-    GAP_AMOUNT_PERCENT = /0*(([0-9])|([1-9][0-9])|([1-4][0-9][0-9])|500)%/
+    GAP_AMOUNT_PERCENT = /0*(([0-9])|([1-9][0-9])|([1-4][0-9][0-9])|500)%/.freeze
 
     # the category axis
     # @return [Axis]
@@ -40,24 +42,24 @@ module Axlsx
     # @see View3D
     def initialize(frame, options = {})
       @gap_depth = nil
-      @view_3D = View3D.new({ :r_ang_ax => 1 }.merge(options))
-      super(frame, options)
+      @view_3D = View3D.new({ r_ang_ax: 1 }.merge(options))
+      super
       axes.add_axis :ser_axis, SerAxis
     end
 
     # @see gapDepth
     def gap_depth=(v)
       RegexValidator.validate "Line3DChart.gapWidth", GAP_AMOUNT_PERCENT, v
-      @gap_depth = (v)
+      @gap_depth = v
     end
     alias :gapDepth= :gap_depth=
 
     # Serializes the object
     # @param [String] str
     # @return [String]
-    def to_xml_string(str = '')
-      super(str) do
-        str << ('<c:gapDepth val="' << @gap_depth.to_s << '"/>') unless @gap_depth.nil?
+    def to_xml_string(str = +'')
+      super do
+        str << '<c:gapDepth val="' << @gap_depth.to_s << '"/>' unless @gap_depth.nil?
       end
     end
   end

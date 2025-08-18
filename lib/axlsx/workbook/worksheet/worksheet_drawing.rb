@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Axlsx
   # This is a utility class for serialing the drawing node in a
   # worksheet. Drawing objects have their own serialization that exports
@@ -13,8 +15,12 @@ module Axlsx
       @drawing = nil
     end
 
+    # The worksheet that owns the drawing
+    # @return [Worksheet]
     attr_reader :worksheet
 
+    # The drawing object
+    # @return [Drawing]
     attr_reader :drawing
 
     # adds a chart to the drawing object
@@ -36,7 +42,7 @@ module Axlsx
 
     # helper method to tell us if the drawing has something in it or not
     # @return [Boolean]
-    def has_drawing?
+    def has_drawing? # rubocop:disable Naming/PredicatePrefix
       @drawing.is_a? Drawing
     end
 
@@ -50,7 +56,7 @@ module Axlsx
 
     # Serialize the drawing for the worksheet
     # @param [String] str
-    def to_xml_string(str = '')
+    def to_xml_string(str = +'')
       return unless has_drawing?
 
       str << "<drawing r:id='#{relationship.Id}'/>"

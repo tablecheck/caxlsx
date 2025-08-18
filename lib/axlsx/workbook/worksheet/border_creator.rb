@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Axlsx
   class BorderCreator
     def initialize(worksheet:, cells:, edges: nil, style: nil, color: nil)
@@ -11,12 +13,12 @@ module Axlsx
       if @edges == :all
         @edges = Axlsx::Border::EDGES
       elsif !@edges.is_a?(Array)
-        raise ArgumentError.new("Invalid edges provided, #{@edges}")
+        raise ArgumentError, "Invalid edges provided, #{@edges}"
       else
         @edges = @edges.map { |x| x&.to_sym }.uniq
 
-        if !(@edges - Axlsx::Border::EDGES).empty?
-          raise ArgumentError.new("Invalid edges provided, #{edges}")
+        unless (@edges - Axlsx::Border::EDGES).empty?
+          raise ArgumentError, "Invalid edges provided, #{edges}"
         end
       end
     end
@@ -61,19 +63,19 @@ module Axlsx
     end
 
     def first_row
-      @first_row ||= first_cell.scan(/\d+/).first
+      @first_row ||= first_cell[/\d+/]
     end
 
     def first_col
-      @first_col ||= first_cell.scan(/\D+/).first
+      @first_col ||= first_cell[/\D+/]
     end
 
     def last_row
-      @last_row ||= last_cell.scan(/\d+/).first
+      @last_row ||= last_cell[/\d+/]
     end
 
     def last_col
-      @last_col ||= last_cell.scan(/\D+/).first
+      @last_col ||= last_cell[/\D+/]
     end
   end
 end

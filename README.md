@@ -15,7 +15,7 @@ https://github.com/caxlsx
 ## Synopsis
 
 Axlsx is an Office Open XML Spreadsheet generator for the Ruby programming language.
-With Axlsx you can create excel worksheets with charts, images (with links), automated and fixed column widths, customized styles, functions, tables, conditional formatting, print options, comments, merged cells, auto filters, file and stream serialization  as well as full schema validation. Axlsx excels at helping you generate beautiful Office Open XML Spreadsheet documents without having to understand the entire ECMA specification.
+With Axlsx you can create Excel worksheets with charts, images (with links), automated and fixed column widths, customized styles, functions, tables, conditional formatting, print options, comments, merged cells, auto filters, file and stream serialization  as well as full schema validation. Axlsx excels at helping you generate beautiful Office Open XML Spreadsheet documents without having to understand the entire ECMA specification.
 
 ![Screen 1](https://github.com/caxlsx/caxlsx/raw/master/examples/sample.png)
 
@@ -73,6 +73,8 @@ and Numbers
 gem 'caxlsx'
 ```
 
+**Supported Ruby versions:** Caxlsx supports Ruby 2.6 and newer.
+
 ## Usage
 
 Here's a teaser that kicks about 2% of what the gem can do.
@@ -105,7 +107,13 @@ Additional documentation is listed below:
 - [Style Reference](https://github.com/caxlsx/caxlsx/blob/master/docs/style_reference.md)
 - [Header and Footer Codes](https://github.com/caxlsx/caxlsx/blob/master/docs/header_and_footer_codes.md)
 
-⚠ Please __do not create issues__ for questions regarding the usage of axlsx / caxlsx. Look through this README, the [examples](https://github.com/caxlsx/caxlsx/tree/master/examples/example.rb), and the [FAQ](https://github.com/caxlsx/caxlsx/wiki/FAQ), and also check [questions tagged `axlsx` on Stack Overflow](https://stackoverflow.com/questions/tagged/axlsx).
+You can run the documentation on your local by running the following:
+```sh
+gem install webrick
+yard server
+```
+
+⚠ Please __do not create issues__ for questions regarding the usage of axlsx / caxlsx. Look through this README, the [examples folder](https://github.com/caxlsx/caxlsx/tree/master/examples), and the [FAQ](https://github.com/caxlsx/caxlsx/wiki/FAQ), and also check [questions tagged `axlsx` on Stack Overflow](https://stackoverflow.com/questions/tagged/axlsx).
 
 Feel free to add your question (including an answer!) to the FAQ if you think it is of general interest.
 
@@ -122,23 +130,19 @@ Currently the following additional gems are available:
 
 ## Security
 
-To prevent [Formula Injection](https://www.owasp.org/index.php/CSV_Injection) vulnerabilities, set the following in an initializer:
+To prevent [Formula Injection](https://www.owasp.org/index.php/CSV_Injection) vulnerabilities, as of version 4.0, axlsx escapes all formulas by default. To permit formulas on a specific cell, please use:
 
 ```ruby
-Axlsx.escape_formulas = true
+cell.escape_formulas = false
 ```
 
-Then, set the following on each cell you'd like to add a formula:
+You may set `escape_formulas` on the workbook, worksheet, row and/or cell level. Refer to examples/escape_formula.md for details.
+
+To allow formulas globally by default (which was the behavior in axlsx 3.x and prior), you may set the following in an initializer:
 
 ```ruby
-cell.escape_formulas = true
+Axlsx.escape_formulas = false
 ```
-
-Refer to examples/escape_formula.md for how to set `escape_formulas` on the workbook, worksheet, row and/or cell level.
-
-**Important:** The global setting `Axlsx.escape_formulas = true` will become the default in the next major release (Axlsx 4.0).
-If you do not wish to set `Axlsx.escape_formulas = true` now, at a minimum, please set `Axlsx.escape_formulas = false` to
-ensure continuity when upgrading.
 
 ## Known Software Interoperability Issues
 

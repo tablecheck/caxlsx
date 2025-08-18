@@ -1,5 +1,7 @@
+# frozen_string_literal: true
+
 module Axlsx
-  # The LineChart is a two dimentional line chart (who would have guessed?) that you can add to your worksheet.
+  # The LineChart is a two dimensional line chart (who would have guessed?) that you can add to your worksheet.
   # @example Creating a chart
   #   # This example creates a line in a single sheet.
   #   require "rubygems" # if that is your preferred way to manage gems!
@@ -45,7 +47,7 @@ module Axlsx
     def initialize(frame, options = {})
       @vary_colors = false
       @grouping = :standard
-      super(frame, options)
+      super
       @series_type = LineSeries
       @d_lbls = nil
     end
@@ -61,7 +63,7 @@ module Axlsx
     # chart based on the actual class type and not a fixed node name.
     # @return [String]
     def node_name
-      path = self.class.to_s
+      path = self.class.name
       if i = path.rindex('::')
         path = path[(i + 2)..-1]
       end
@@ -72,16 +74,16 @@ module Axlsx
     # Serializes the object
     # @param [String] str
     # @return [String]
-    def to_xml_string(str = '')
-      super(str) do
-        str << ("<c:" << node_name << ">")
-        str << ('<c:grouping val="' << grouping.to_s << '"/>')
-        str << ('<c:varyColors val="' << vary_colors.to_s << '"/>')
+    def to_xml_string(str = +'')
+      super do
+        str << "<c:" << node_name << ">"
+        str << '<c:grouping val="' << grouping.to_s << '"/>'
+        str << '<c:varyColors val="' << vary_colors.to_s << '"/>'
         @series.each { |ser| ser.to_xml_string(str) }
         @d_lbls.to_xml_string(str) if @d_lbls
         yield if block_given?
-        axes.to_xml_string(str, :ids => true)
-        str << ("</c:" << node_name << ">")
+        axes.to_xml_string(str, ids: true)
+        str << "</c:" << node_name << ">"
         axes.to_xml_string(str)
       end
     end
@@ -90,7 +92,7 @@ module Axlsx
     # axis.
     # @return [Axes]
     def axes
-      @axes ||= Axes.new(:cat_axis => CatAxis, :val_axis => ValAxis)
+      @axes ||= Axes.new(cat_axis: CatAxis, val_axis: ValAxis)
     end
   end
 end

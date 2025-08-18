@@ -1,24 +1,25 @@
 #!/usr/bin/env ruby -s
+# frozen_string_literal: true
 
-$:.unshift "#{File.dirname(__FILE__)}/../lib"
+$LOAD_PATH.unshift "#{File.dirname(__FILE__)}/../lib"
 require 'axlsx'
 require 'ruby-prof'
-# RubyProf.measure_mode = RubyProf::MEMORY
-#
-row = []
-# Taking worst case scenario of all string data
-input = (32..126).to_a.pack('U*').chars.to_a
-20.times { row << input.shuffle.join }
 
-profile = RubyProf.profile do
+row = []
+input1 = (32..126).to_a.pack('U*').chars.to_a # these will need to be escaped
+input2 = (65..122).to_a.pack('U*').chars.to_a # these do not need to be escaped
+10.times { row << input1.join }
+10.times { row << input2.join }
+
+result = RubyProf::Profile.profile do
   p = Axlsx::Package.new
   p.workbook.add_worksheet do |sheet|
-    10000.times do
+    10_000.times do
       sheet << row
     end
   end
   p.to_stream
 end
 
-printer = RubyProf::FlatPrinter.new(profile)
-printer.print(STDOUT, {})
+printer = RubyProf::FlatPrinter.new(result)
+printer.print($stdout, {})

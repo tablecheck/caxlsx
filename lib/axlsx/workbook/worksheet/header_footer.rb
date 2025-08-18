@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Axlsx
   # Header/Footer options for printing a worksheet. All settings are optional.
   #
@@ -5,7 +7,7 @@ module Axlsx
   # of plain text and control characters. A fairly comprehensive list of control
   # characters can be found here:
   # https://github.com/randym/axlsx/blob/master/notes_on_header_footer.md
-  #     
+  #
   # @note The recommended way of managing header/footers is via Worksheet#header_footer
   # @see Worksheet#initialize
   class HeaderFooter
@@ -40,10 +42,10 @@ module Axlsx
     # Serializes the header/footer object.
     # @param [String] str
     # @return [String]
-    def to_xml_string(str = '')
+    def to_xml_string(str = +'')
       serialized_tag('headerFooter', str) do
         serialized_element_attributes(str) do |value|
-          value = ::CGI.escapeHTML(value)
+          ::CGI.escapeHTML(value)
         end
       end
     end

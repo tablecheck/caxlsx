@@ -1,9 +1,12 @@
+# frozen_string_literal: true
+
 module Axlsx
   # A worksheet hyperlink object. Note that this is not the same as a drawing hyperlink object.
   class WorksheetHyperlink
     include Axlsx::OptionsParser
     include Axlsx::Accessors
     include Axlsx::SerializedAttributes
+
     # Creates a new hyperlink object.
     # @note the preferred way to add hyperlinks to your worksheet is the Worksheet#add_hyperlink method
     # @param [Worksheet] worksheet the Worksheet that owns this hyperlink
@@ -39,7 +42,7 @@ module Axlsx
     # @param [String|Cell] cell_reference The string reference or cell that defines where this hyperlink shows in the worksheet.
     def ref=(cell_reference)
       cell_reference = cell_reference.r if cell_reference.is_a?(Cell)
-      Axlsx::validate_string cell_reference
+      Axlsx.validate_string cell_reference
       @ref = cell_reference
     end
 
@@ -50,15 +53,15 @@ module Axlsx
     def relationship
       return unless @target == :external
 
-      Relationship.new(self, HYPERLINK_R, location, :target_mode => :External)
+      Relationship.new(self, HYPERLINK_R, location, target_mode: :External)
     end
 
-    # Seralize the object
+    # Serialize the object
     # @param [String] str
     # @return [String]
-    def to_xml_string(str = '')
+    def to_xml_string(str = +'')
       str << '<hyperlink '
-      serialized_attributes str, location_or_id
+      serialized_attributes str, location_or_id, false
       str << '/>'
     end
 
@@ -67,7 +70,7 @@ module Axlsx
     # r:id should only be specified for external targets.
     # @return [Hash]
     def location_or_id
-      @target == :external ? { :"r:id" => relationship.Id } : { :location => Axlsx::coder.encode(location) }
+      @target == :external ? { "r:id": relationship.Id } : { location: Axlsx.coder.encode(location) }
     end
   end
 end

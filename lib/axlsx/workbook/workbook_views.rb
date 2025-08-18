@@ -1,15 +1,17 @@
+# frozen_string_literal: true
+
 module Axlsx
   # a simple types list of BookView objects
   class WorkbookViews < SimpleTypedList
     # creates the book views object
     def initialize
-      super WorkbookView
+      super(WorkbookView)
     end
 
     # Serialize to xml
     # @param [String] str
     # @return [String]
-    def to_xml_string(str = '')
+    def to_xml_string(str = +'')
       return if empty?
 
       str << "<bookViews>"

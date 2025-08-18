@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Axlsx
   # Conditional Format Value Object
   # Describes the values of the interpolation points in a gradient scale. This object is used by ColorScale, DataBar and IconSet classes
@@ -38,10 +40,16 @@ module Axlsx
     attr_reader :val
 
     # @see type
-    def type=(v); Axlsx::validate_conditional_formatting_value_object_type(v); @type = v end
+    def type=(v)
+      Axlsx.validate_conditional_formatting_value_object_type(v)
+      @type = v
+    end
 
     # @see gte
-    def gte=(v); Axlsx::validate_boolean(v); @gte = v end
+    def gte=(v)
+      Axlsx.validate_boolean(v)
+      @gte = v
+    end
 
     # @see val
     def val=(v)
@@ -53,7 +61,7 @@ module Axlsx
     # serialize the Csvo object
     # @param [String] str
     # @return [String]
-    def to_xml_string(str = '')
+    def to_xml_string(str = +'')
       serialized_tag('cfvo', str)
     end
   end

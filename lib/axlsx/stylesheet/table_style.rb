@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Axlsx
   # A single table style definition and is a collection for tableStyleElements
   # @note Table are not supported in this version and only the defaults required for a valid workbook are created.
@@ -13,7 +15,7 @@ module Axlsx
     def initialize(name, options = {})
       self.name = name
       parse_options options
-      super TableStyleElement
+      super(TableStyleElement)
     end
 
     serializable_attributes :name, :pivot, :table
@@ -31,18 +33,29 @@ module Axlsx
     attr_reader :table
 
     # @see name
-    def name=(v) Axlsx::validate_string v; @name = v end
+    def name=(v)
+      Axlsx.validate_string v
+      @name = v
+    end
+
     # @see pivot
-    def pivot=(v) Axlsx::validate_boolean v; @pivot = v end
+    def pivot=(v)
+      Axlsx.validate_boolean v
+      @pivot = v
+    end
+
     # @see table
-    def table=(v) Axlsx::validate_boolean v; @table = v end
+    def table=(v)
+      Axlsx.validate_boolean v
+      @table = v
+    end
 
     # Serializes the object
     # @param [String] str
     # @return [String]
-    def to_xml_string(str = '')
+    def to_xml_string(str = +'')
       str << '<tableStyle '
-      serialized_attributes str, { :count => self.size }
+      serialized_attributes str, { count: size }
       str << '>'
       each { |table_style_el| table_style_el.to_xml_string(str) }
       str << '</tableStyle>'

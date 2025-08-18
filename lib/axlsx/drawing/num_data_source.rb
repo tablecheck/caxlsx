@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Axlsx
   # A numeric data source for use by charts.
   class NumDataSource
@@ -15,7 +17,7 @@ module Axlsx
       @f = nil
       @data = @data_type.new(options)
       if options[:data] && options[:data].first.is_a?(Cell)
-        @f = Axlsx::cell_range(options[:data])
+        @f = Axlsx.cell_range(options[:data])
       end
       parse_options options
     end
@@ -42,17 +44,17 @@ module Axlsx
 
     # serialize the object
     # @param [String] str
-    def to_xml_string(str = "")
-      str << ('<c:' << tag_name.to_s << '>')
+    def to_xml_string(str = +'')
+      str << '<c:' << tag_name.to_s << '>'
       if @f
-        str << ('<c:' << @ref_tag_name.to_s << '>')
-        str << ('<c:f>' << @f.to_s << '</c:f>')
+        str << '<c:' << @ref_tag_name.to_s << '>'
+        str << '<c:f>' << @f.to_s << '</c:f>'
       end
       @data.to_xml_string str
       if @f
-        str << ('</c:' << @ref_tag_name.to_s << '>')
+        str << '</c:' << @ref_tag_name.to_s << '>'
       end
-      str << ('</c:' << tag_name.to_s << '>')
+      str << '</c:' << tag_name.to_s << '>'
     end
   end
 end

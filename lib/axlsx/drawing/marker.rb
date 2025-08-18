@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Axlsx
   # The Marker class defines a point in the worksheet that drawing anchors attach to.
   # @note The recommended way to manage markers is Worksheet#add_chart Markers are created for a two cell anchor based on the :start and :end options.
@@ -32,13 +34,28 @@ module Axlsx
     attr_reader :rowOff
 
     # @see col
-    def col=(v) Axlsx::validate_unsigned_int v; @col = v end
+    def col=(v)
+      Axlsx.validate_unsigned_int v
+      @col = v
+    end
+
     # @see colOff
-    def colOff=(v) Axlsx::validate_int v; @colOff = v end
+    def colOff=(v)
+      Axlsx.validate_int v
+      @colOff = v
+    end
+
     # @see row
-    def row=(v) Axlsx::validate_unsigned_int v; @row = v end
+    def row=(v)
+      Axlsx.validate_unsigned_int v
+      @row = v
+    end
+
     # @see rowOff
-    def rowOff=(v) Axlsx::validate_int v; @rowOff = v end
+    def rowOff=(v)
+      Axlsx.validate_int v
+      @rowOff = v
+    end
 
     # shortcut to set the column, row position for this marker
     # @param col the column for the marker, a Cell object or a string reference like "B7"
@@ -54,9 +71,9 @@ module Axlsx
     # Serializes the object
     # @param [String] str
     # @return [String]
-    def to_xml_string(str = '')
+    def to_xml_string(str = +'')
       [:col, :colOff, :row, :rowOff].each do |k|
-        str << ('<xdr:' << k.to_s << '>' << self.send(k).to_s << '</xdr:' << k.to_s << '>')
+        str << '<xdr:' << k.to_s << '>' << send(k).to_s << '</xdr:' << k.to_s << '>'
       end
     end
 
@@ -66,7 +83,7 @@ module Axlsx
     # @see Chart#start_at
     def parse_coord_args(x, y = 0)
       if x.is_a?(String)
-        x, y = *Axlsx::name_to_indices(x)
+        x, y = *Axlsx.name_to_indices(x)
       end
       if x.is_a?(Cell)
         x, y = *x.pos

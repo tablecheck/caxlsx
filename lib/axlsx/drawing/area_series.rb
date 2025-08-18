@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Axlsx
   # A AreaSeries defines the title, data and labels for line charts
   # @note The recommended way to manage series is to use Chart#add_series
@@ -35,11 +37,11 @@ module Axlsx
     # @param [Chart] chart
     def initialize(chart, options = {})
       @show_marker = false
-      @marker_symbol = options[:marker_symbol] ? options[:marker_symbol] : :default
+      @marker_symbol = options[:marker_symbol] || :default
       @smooth = false
       @labels, @data = nil, nil
-      super(chart, options)
-      @labels = AxDataSource.new(:data => options[:labels]) unless options[:labels].nil?
+      super
+      @labels = AxDataSource.new(data: options[:labels]) unless options[:labels].nil?
       @data = NumDataSource.new(options) unless options[:data].nil?
     end
 
@@ -50,34 +52,34 @@ module Axlsx
 
     # @see show_marker
     def show_marker=(v)
-      Axlsx::validate_boolean(v)
+      Axlsx.validate_boolean(v)
       @show_marker = v
     end
 
     # @see marker_symbol
     def marker_symbol=(v)
-      Axlsx::validate_marker_symbol(v)
+      Axlsx.validate_marker_symbol(v)
       @marker_symbol = v
     end
 
     # @see smooth
     def smooth=(v)
-      Axlsx::validate_boolean(v)
+      Axlsx.validate_boolean(v)
       @smooth = v
     end
 
     # Serializes the object
     # @param [String] str
     # @return [String]
-    def to_xml_string(str = '')
-      super(str) do
+    def to_xml_string(str = +'')
+      super do
         if color
           str << '<c:spPr><a:solidFill>'
-          str << ('<a:srgbClr val="' << color << '"/>')
+          str << '<a:srgbClr val="' << color << '"/>'
           str << '</a:solidFill>'
           str << '<a:ln w="28800">'
           str << '<a:solidFill>'
-          str << ('<a:srgbClr val="' << color << '"/>')
+          str << '<a:srgbClr val="' << color << '"/>'
           str << '</a:solidFill>'
           str << '</a:ln>'
           str << '<a:round/>'
@@ -87,21 +89,27 @@ module Axlsx
         if !@show_marker
           str << '<c:marker><c:symbol val="none"/></c:marker>'
         elsif @marker_symbol != :default
-          str << '<c:marker><c:symbol val="' + @marker_symbol.to_s + '"/></c:marker>'
+          str << '<c:marker><c:symbol val="' << @marker_symbol.to_s << '"/></c:marker>'
         end
 
         @labels.to_xml_string(str) unless @labels.nil?
         @data.to_xml_string(str) unless @data.nil?
-        str << ('<c:smooth val="' << ((smooth) ? '1' : '0') << '"/>')
+        str << '<c:smooth val="' << (smooth ? '1' : '0') << '"/>'
       end
     end
 
     private
 
     # assigns the data for this series
-    def data=(v) DataTypeValidator.validate "Series.data", [NumDataSource], v; @data = v; end
+    def data=(v)
+      DataTypeValidator.validate "Series.data", [NumDataSource], v
+      @data = v
+    end
 
     # assigns the labels for this series
-    def labels=(v) DataTypeValidator.validate "Series.labels", [AxDataSource], v; @labels = v; end
+    def labels=(v)
+      DataTypeValidator.validate "Series.labels", [AxDataSource], v
+      @labels = v
+    end
   end
 end

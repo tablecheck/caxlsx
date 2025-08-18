@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Axlsx
   # an element of style that belongs to a table style.
   # @note tables and table styles are not supported in this version. This class exists in preparation for that support.
@@ -56,18 +58,27 @@ module Axlsx
     attr_reader :dxfId
 
     # @see type
-    def type=(v) Axlsx::validate_table_element_type v; @type = v end
+    def type=(v)
+      Axlsx.validate_table_element_type v
+      @type = v
+    end
 
     # @see size
-    def size=(v) Axlsx::validate_unsigned_int v; @size = v end
+    def size=(v)
+      Axlsx.validate_unsigned_int v
+      @size = v
+    end
 
     # @see dxfId
-    def dxfId=(v) Axlsx::validate_unsigned_int v; @dxfId = v end
+    def dxfId=(v)
+      Axlsx.validate_unsigned_int v
+      @dxfId = v
+    end
 
     # Serializes the object
     # @param [String] str
     # @return [String]
-    def to_xml_string(str = '')
+    def to_xml_string(str = +'')
       serialized_tag('tableStyleElement', str)
     end
   end

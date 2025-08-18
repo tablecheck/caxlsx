@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Axlsx
   # Table
   # @note Worksheet#add_pivot_table is the recommended way to create tables for your worksheets.
@@ -24,6 +26,7 @@ module Axlsx
       @pages = []
       @subtotal = nil
       @no_subtotals_on_headers = []
+      @grand_totals = :both
       @sort_on_headers = {}
       @style_info = {}
       parse_options options
@@ -47,6 +50,19 @@ module Axlsx
       headers ||= {}
       headers = Hash[*headers.map { |h| [h, :ascending] }.flatten] if headers.is_a?(Array)
       @sort_on_headers = headers
+    end
+
+    # Defines which Grand Totals are to be shown.
+    # @return [Symbol] The row and/or column Grand Totals that are to be shown.
+    # Defaults to `:both` to show both row & column grand totals.
+    # Set to `:row_only`, `:col_only`, or `:none` to hide one or both Grand Totals.
+    attr_reader :grand_totals
+
+    # (see #grand_totals)
+    def grand_totals=(value)
+      RestrictionValidator.validate "PivotTable.grand_totals", [:both, :row_only, :col_only, :none], value
+
+      @grand_totals = value
     end
 
     # Style info for the pivot table
@@ -112,7 +128,8 @@ module Axlsx
       @columns = v
     end
 
-    # The data
+    # The data as an array of either headers (String) or hashes or mix of the two.
+    # Hash in format of { ref: header, num_fmt: numFmts, subtotal: subtotal }, where header is String, numFmts is Integer, and subtotal one of %w[sum count average max min product countNums stdDev stdDevp var varp]; leave subtotal blank to sum values
     # @return [Array]
     attr_reader :data
 
@@ -122,7 +139,7 @@ module Axlsx
       @data = []
       v.each do |data_field|
         if data_field.is_a? String
-          data_field = { :ref => data_field }
+          data_field = { ref: data_field }
         end
         data_field.each do |key, value|
           if key == :num_fmt
@@ -133,7 +150,6 @@ module Axlsx
         end
         @data << data_field
       end
-      @data
     end
 
     # The pages
@@ -158,13 +174,13 @@ module Axlsx
     # The part name for this table
     # @return [String]
     def pn
-      "#{PIVOT_TABLE_PN % (index + 1)}"
+      format(PIVOT_TABLE_PN, index + 1)
     end
 
     # The relationship part name of this pivot table
     # @return [String]
     def rels_pn
-      "#{PIVOT_TABLE_RELS_PN % (index + 1)}"
+      format(PIVOT_TABLE_RELS_PN, index + 1)
     end
 
     # The cache_definition for this pivot table
@@ -184,13 +200,17 @@ module Axlsx
     # Serializes the object
     # @param [String] str
     # @return [String]
-    def to_xml_string(str = '')
+    def to_xml_string(str = +'')
       str << '<?xml version="1.0" encoding="UTF-8"?>'
 
-      str << ('<pivotTableDefinition xmlns="' << XML_NS << '" name="' << name << '" cacheId="' << cache_definition.cache_id.to_s << '"' << (data.size <= 1 ? ' dataOnRows="1"' : '') << ' applyNumberFormats="0" applyBorderFormats="0" applyFontFormats="0" applyPatternFormats="0" applyAlignmentFormats="0" applyWidthHeightFormats="1" dataCaption="Data" showMultipleLabel="0" showMemberPropertyTips="0" useAutoFormatting="1" indent="0" compact="0" compactData="0" gridDropZones="1" multipleFieldFilters="0">')
+      str << '<pivotTableDefinition xmlns="' << XML_NS << '" name="' << name << '" cacheId="' << cache_definition.cache_id.to_s << '"'
+      str << ' dataOnRows="1"' if data.size <= 1
+      str << ' rowGrandTotals="0"' if grand_totals == :col_only || grand_totals == :none
+      str << ' colGrandTotals="0"' if grand_totals == :row_only || grand_totals == :none
+      str << ' applyNumberFormats="0" applyBorderFormats="0" applyFontFormats="0" applyPatternFormats="0" applyAlignmentFormats="0" applyWidthHeightFormats="1" dataCaption="Data" showMultipleLabel="0" showMemberPropertyTips="0" useAutoFormatting="1" indent="0" compact="0" compactData="0" gridDropZones="1" multipleFieldFilters="0">'
 
-      str << ('<location firstDataCol="1" firstDataRow="1" firstHeaderRow="1" ref="' << ref << '"/>')
-      str << ('<pivotFields count="' << header_cells_count.to_s << '">')
+      str << '<location firstDataCol="1" firstDataRow="1" firstHeaderRow="1" ref="' << ref << '"/>'
+      str << '<pivotFields count="' << header_cells_count.to_s << '">'
 
       header_cell_values.each do |cell_value|
         subtotal = !no_subtotals_on_headers.include?(cell_value)
@@ -203,13 +223,13 @@ module Axlsx
         str << '<rowFields count="1"><field x="-2"/></rowFields>'
         str << '<rowItems count="2"><i><x/></i> <i i="1"><x v="1"/></i></rowItems>'
       else
-        str << ('<rowFields count="' << rows.size.to_s << '">')
+        str << '<rowFields count="' << rows.size.to_s << '">'
         rows.each do |row_value|
-          str << ('<field x="' << header_index_of(row_value).to_s << '"/>')
+          str << '<field x="' << header_index_of(row_value).to_s << '"/>'
         end
         str << '</rowFields>'
-        str << ('<rowItems count="' << rows.size.to_s << '">')
-        rows.size.times do |i|
+        str << '<rowItems count="' << rows.size.to_s << '">'
+        rows.size.times do
           str << '<i/>'
         end
         str << '</rowItems>'
@@ -219,7 +239,7 @@ module Axlsx
           str << '<colFields count="1"><field x="-2"/></colFields>'
           str << "<colItems count=\"#{data.size}\">"
           str << '<i><x/></i>'
-          data[1..-1].each_with_index do |datum_value, i|
+          (data.size - 1).times do |i|
             str << "<i i=\"#{i + 1}\"><x v=\"#{i + 1}\"/></i>"
           end
           str << '</colItems>'
@@ -227,24 +247,25 @@ module Axlsx
           str << '<colItems count="1"><i/></colItems>'
         end
       else
-        str << ('<colFields count="' << columns.size.to_s << '">')
+        str << '<colFields count="' << columns.size.to_s << '">'
         columns.each do |column_value|
-          str << ('<field x="' << header_index_of(column_value).to_s << '"/>')
+          str << '<field x="' << header_index_of(column_value).to_s << '"/>'
         end
         str << '</colFields>'
       end
       unless pages.empty?
-        str << ('<pageFields count="' << pages.size.to_s << '">')
+        str << '<pageFields count="' << pages.size.to_s << '">'
         pages.each do |page_value|
-          str << ('<pageField fld="' << header_index_of(page_value).to_s << '"/>')
+          str << '<pageField fld="' << header_index_of(page_value).to_s << '"/>'
         end
         str << '</pageFields>'
       end
       unless data.empty?
         str << "<dataFields count=\"#{data.size}\">"
         data.each do |datum_value|
-          # The correct name prefix in ["Sum","Average", etc...]
-          str << "<dataField name='#{(datum_value[:subtotal] || '')} of #{datum_value[:ref]}' fld='#{header_index_of(datum_value[:ref])}' baseField='0' baseItem='0'"
+          subtotal_name = datum_value[:subtotal] || 'sum'
+          subtotal_name = 'count' if name == 'countNums' # both count & countNums are labelled as count
+          str << "<dataField name='#{subtotal_name.capitalize} of #{datum_value[:ref]}' fld='#{header_index_of(datum_value[:ref])}' baseField='0' baseItem='0'"
           str << " numFmtId='#{datum_value[:num_fmt]}'" if datum_value[:num_fmt]
           str << " subtotal='#{datum_value[:subtotal]}' " if datum_value[:subtotal]
           str << "/>"
@@ -265,7 +286,7 @@ module Axlsx
     # References for header cells
     # @return [Array]
     def header_cell_refs
-      Axlsx::range_to_a(header_range).first
+      Axlsx.range_to_a(header_range).first
     end
 
     # The header cells for the pivot table
@@ -310,7 +331,11 @@ module Axlsx
       elsif columns.include? cell_ref
         attributes << 'axis="axisCol"'
         attributes << "sortType=\"#{sorttype == :descending ? 'descending' : 'ascending'}\"" if sorttype
-        include_items_tag = true
+        if subtotal
+          include_items_tag = true
+        else
+          attributes << 'defaultSubtotal="0"'
+        end
       elsif pages.include? cell_ref
         attributes << 'axis="axisPage"'
         include_items_tag = true
@@ -318,7 +343,7 @@ module Axlsx
         attributes << 'dataField="1"'
       end
 
-      "<pivotField #{attributes.join(' ')}>#{include_items_tag ? items_tag : nil}</pivotField>"
+      "<pivotField #{attributes.join(' ')}>#{items_tag if include_items_tag}</pivotField>"
     end
 
     def data_refs

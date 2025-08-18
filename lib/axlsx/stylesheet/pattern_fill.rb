@@ -1,9 +1,12 @@
+# frozen_string_literal: true
+
 module Axlsx
   # A PatternFill is the pattern and solid fill styling for a cell.
   # @note The recommended way to manage styles is with Styles#add_style
   # @see Style#add_style
   class PatternFill
     include Axlsx::OptionsParser
+
     # Creates a new PatternFill Object
     # @option options [Symbol] patternType
     # @option options [Color] fgColor
@@ -47,17 +50,28 @@ module Axlsx
     attr_reader :patternType
 
     # @see fgColor
-    def fgColor=(v) DataTypeValidator.validate "PatternFill.fgColor", Color, v; @fgColor = v end
+    def fgColor=(v)
+      DataTypeValidator.validate "PatternFill.fgColor", Color, v
+      @fgColor = v
+    end
+
     # @see bgColor
-    def bgColor=(v) DataTypeValidator.validate "PatternFill.bgColor", Color, v; @bgColor = v end
+    def bgColor=(v)
+      DataTypeValidator.validate "PatternFill.bgColor", Color, v
+      @bgColor = v
+    end
+
     # @see patternType
-    def patternType=(v) Axlsx::validate_pattern_type v; @patternType = v end
+    def patternType=(v)
+      Axlsx.validate_pattern_type v
+      @patternType = v
+    end
 
     # Serializes the object
     # @param [String] str
     # @return [String]
-    def to_xml_string(str = '')
-      str << ('<patternFill patternType="' << patternType.to_s << '">')
+    def to_xml_string(str = +'')
+      str << '<patternFill patternType="' << patternType.to_s << '">'
       if fgColor.is_a?(Color)
         fgColor.to_xml_string str, "fgColor"
       end

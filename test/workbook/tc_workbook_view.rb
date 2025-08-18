@@ -1,6 +1,8 @@
+# frozen_string_literal: true
+
 require 'tc_helper'
 
-class TestWorkbookView < Test::Unit::TestCase
+class TestWorkbookView < Minitest::Test
   def setup
     @options = { visibility: :hidden, minimized: true, show_horizontal_scroll: true, show_vertical_scroll: true,
                  show_sheet_tabs: true, tab_ratio: 750, first_sheet: 0, active_tab: 1, x_window: 500, y_window: 400,
@@ -16,23 +18,23 @@ class TestWorkbookView < Test::Unit::TestCase
 
   def test_boolean_attribute_validation
     %w(minimized show_horizontal_scroll show_vertical_scroll show_sheet_tabs auto_filter_date_grouping).each do |attr|
-      assert_raise(ArgumentError, 'only booleanish allowed in boolean attributes') { @book_view.send("#{attr}=", "banana") }
-      assert_nothing_raised { @book_view.send("#{attr}=", false) }
+      assert_raises(ArgumentError, 'only booleanish allowed in boolean attributes') { @book_view.send(:"#{attr}=", "banana") }
+      refute_raises { @book_view.send(:"#{attr}=", false) }
     end
   end
 
   def test_integer_attribute_validation
     %w(tab_ratio first_sheet active_tab x_window y_window window_width window_height).each do |attr|
-      assert_raise(ArgumentError, 'only integer allowed in integer attributes') { @book_view.send("#{attr}=", "b") }
-      assert_nothing_raised { @book_view.send("#{attr}=", 7) }
+      assert_raises(ArgumentError, 'only integer allowed in integer attributes') { @book_view.send(:"#{attr}=", "b") }
+      refute_raises { @book_view.send(:"#{attr}=", 7) }
     end
   end
 
   def test_visibility_attribute_validation
-    assert_raise(ArgumentError) { @book_view.visibility = :foobar }
-    assert_nothing_raised { @book_view.visibility = :hidden }
-    assert_nothing_raised { @book_view.visibility = :very_hidden }
-    assert_nothing_raised { @book_view.visibility = :visible }
+    assert_raises(ArgumentError) { @book_view.visibility = :foobar }
+    refute_raises { @book_view.visibility = :hidden }
+    refute_raises { @book_view.visibility = :very_hidden }
+    refute_raises { @book_view.visibility = :visible }
   end
 
   def test_to_xml_string
@@ -43,6 +45,7 @@ class TestWorkbookView < Test::Unit::TestCase
         value = value ? 1 : 0
       end
       path = "workbookView[@#{Axlsx.camel(key, false)}='#{value}']"
+
       assert_equal(1, doc.xpath(path).size)
     end
   end

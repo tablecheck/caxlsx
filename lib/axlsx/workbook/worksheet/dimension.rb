@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Axlsx
   # This class manages the dimensions for a worksheet.
   # While this node is optional in the specification some readers like
@@ -26,7 +28,7 @@ module Axlsx
 
     attr_reader :worksheet
 
-    # the full refernece for this dimension
+    # the full reference for this dimension
     # @return [String]
     def sqref
       "#{first_cell_reference}:#{last_cell_reference}"
@@ -34,10 +36,10 @@ module Axlsx
 
     # serialize the object
     # @return [String]
-    def to_xml_string(str = '')
+    def to_xml_string(str = +'')
       return if worksheet.rows.empty?
 
-      str << "<dimension ref=\"%s\"></dimension>" % sqref
+      str << '<dimension ref="' << sqref << '"></dimension>'
     end
 
     # The first cell in the dimension

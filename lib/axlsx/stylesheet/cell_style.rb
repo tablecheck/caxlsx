@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Axlsx
   # CellStyle defines named styles that reference defined formatting records and can be used in your worksheet.
   # @note Using Styles#add_style is the recommended way to manage cell styling.
@@ -6,7 +8,7 @@ module Axlsx
     include Axlsx::OptionsParser
     include Axlsx::SerializedAttributes
 
-    # Creats a new CellStyle object
+    # Creates a new CellStyle object
     # @option options [String] name
     # @option options [Integer] xfId
     # @option options [Integer] buildinId
@@ -37,7 +39,7 @@ module Axlsx
     # @return [Integer]
     attr_reader :iLevel
 
-    # Determines if this named style should show in the list of styles when using excel
+    # Determines if this named style should show in the list of styles when using Excel
     # @return [Boolean]
     attr_reader :hidden
 
@@ -46,22 +48,45 @@ module Axlsx
     attr_reader :customBuiltin
 
     # @see name
-    def name=(v) Axlsx::validate_string v; @name = v end
+    def name=(v)
+      Axlsx.validate_string v
+      @name = v
+    end
+
     # @see xfId
-    def xfId=(v) Axlsx::validate_unsigned_int v; @xfId = v end
+    def xfId=(v)
+      Axlsx.validate_unsigned_int v
+      @xfId = v
+    end
+
     # @see builtinId
-    def builtinId=(v) Axlsx::validate_unsigned_int v; @builtinId = v end
+    def builtinId=(v)
+      Axlsx.validate_unsigned_int v
+      @builtinId = v
+    end
+
     # @see iLivel
-    def iLevel=(v) Axlsx::validate_unsigned_int v; @iLevel = v end
+    def iLevel=(v)
+      Axlsx.validate_unsigned_int v
+      @iLevel = v
+    end
+
     # @see hidden
-    def hidden=(v) Axlsx::validate_boolean v; @hidden = v end
+    def hidden=(v)
+      Axlsx.validate_boolean v
+      @hidden = v
+    end
+
     # @see customBuiltin
-    def customBuiltin=(v) Axlsx::validate_boolean v; @customBuiltin = v end
+    def customBuiltin=(v)
+      Axlsx.validate_boolean v
+      @customBuiltin = v
+    end
 
     # Serializes the object
     # @param [String] str
     # @return [String]
-    def to_xml_string(str = '')
+    def to_xml_string(str = +'')
       serialized_tag('cellStyle', str)
     end
   end

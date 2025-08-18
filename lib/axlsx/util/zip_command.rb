@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'open3'
 require 'shellwords'
 
@@ -23,10 +25,10 @@ module Axlsx
     # Create a temporary directory for writing files to.
     #
     # The directory and its contents are removed at the end of the block.
-    def open(output, &block)
+    def open(output)
       Dir.mktmpdir do |dir|
         @dir = dir
-        block.call(self)
+        yield(self)
         write_file
         zip_parts(output)
       end
@@ -38,23 +40,21 @@ module Axlsx
       @current_file = "#{@dir}/#{entry.name}"
       @files << entry.name
       FileUtils.mkdir_p(File.dirname(@current_file))
+      @io = File.open(@current_file, "wb")
     end
 
     # Write to a buffer that will be written to the current entry
     def write(content)
-      @buffer << content
+      @io << content
     end
     alias << write
 
     private
 
     def write_file
-      if @current_file
-        @buffer.rewind
-        File.open(@current_file, "wb") { |f| f.write @buffer.read }
-      end
+      @io.close if @current_file
       @current_file = nil
-      @buffer = StringIO.new
+      @io = nil
     end
 
     def zip_parts(output)
@@ -63,8 +63,8 @@ module Axlsx
       escaped_dir = Shellwords.shellescape(@dir)
       command = "cd #{escaped_dir} && #{@zip_command} #{output} #{inputs}"
       stdout_and_stderr, status = Open3.capture2e(command)
-      if !status.success?
-        raise(ZipError.new(stdout_and_stderr))
+      unless status.success?
+        raise ZipError, stdout_and_stderr
       end
     end
   end

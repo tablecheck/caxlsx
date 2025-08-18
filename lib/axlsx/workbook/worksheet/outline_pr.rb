@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Axlsx
   # The OutlinePr class manages serialization of a worksheet's outlinePr element, which provides various
   # options to control outlining.
@@ -11,7 +13,7 @@ module Axlsx
                             :apply_styles
 
     # These attributes are all boolean so I'm doing a bit of a hand
-    # waving magic show to set up the attriubte accessors
+    # waving magic show to set up the attribute accessors
     boolean_attr_accessor :summary_below,
                           :summary_right,
                           :apply_styles
@@ -25,8 +27,10 @@ module Axlsx
     # Serialize the object
     # @param [String] str serialized output will be appended to this object if provided.
     # @return [String]
-    def to_xml_string(str = '')
-      str << "<outlinePr #{serialized_attributes} />"
+    def to_xml_string(str = +'')
+      str << '<outlinePr '
+      serialized_attributes(str)
+      str << '/>'
     end
   end
 end

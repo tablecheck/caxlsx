@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Axlsx
   # The RichTextRun class creates and self serializing text run.
   class RichTextRun
@@ -27,7 +29,9 @@ module Axlsx
     attr_reader :font_name
 
     # @see font_name
-    def font_name=(v) set_run_style :validate_string, :font_name, v; end
+    def font_name=(v)
+      set_run_style :validate_string, :font_name, v
+    end
 
     # The inline charset property for the cell
     # As far as I can tell, this is pretty much ignored. However, based on the spec it should be one of the following:
@@ -54,7 +58,9 @@ module Axlsx
     attr_reader :charset
 
     # @see charset
-    def charset=(v) set_run_style :validate_unsigned_int, :charset, v; end
+    def charset=(v)
+      set_run_style :validate_unsigned_int, :charset, v
+    end
 
     # The inline family property for the cell
     # @return [Integer]
@@ -75,60 +81,74 @@ module Axlsx
     attr_reader :b
 
     # @see b
-    def b=(v) set_run_style :validate_boolean, :b, v; end
+    def b=(v)
+      set_run_style :validate_boolean, :b, v
+    end
 
     # The inline italic property for the cell
     # @return [Boolean]
     attr_reader :i
 
     # @see i
-    def i=(v) set_run_style :validate_boolean, :i, v; end
+    def i=(v)
+      set_run_style :validate_boolean, :i, v
+    end
 
     # The inline strike property for the cell
     # @return [Boolean]
     attr_reader :strike
 
     # @see strike
-    def strike=(v) set_run_style :validate_boolean, :strike, v; end
+    def strike=(v)
+      set_run_style :validate_boolean, :strike, v
+    end
 
     # The inline outline property for the cell
     # @return [Boolean]
     attr_reader :outline
 
     # @see outline
-    def outline=(v) set_run_style :validate_boolean, :outline, v; end
+    def outline=(v)
+      set_run_style :validate_boolean, :outline, v
+    end
 
     # The inline shadow property for the cell
     # @return [Boolean]
     attr_reader :shadow
 
     # @see shadow
-    def shadow=(v) set_run_style :validate_boolean, :shadow, v; end
+    def shadow=(v)
+      set_run_style :validate_boolean, :shadow, v
+    end
 
     # The inline condense property for the cell
     # @return [Boolean]
     attr_reader :condense
 
     # @see condense
-    def condense=(v) set_run_style :validate_boolean, :condense, v; end
+    def condense=(v)
+      set_run_style :validate_boolean, :condense, v
+    end
 
     # The inline extend property for the cell
     # @return [Boolean]
     attr_reader :extend
 
     # @see extend
-    def extend=(v) set_run_style :validate_boolean, :extend, v; end
+    def extend=(v)
+      set_run_style :validate_boolean, :extend, v
+    end
 
     # The inline underline property for the cell.
     # It must be one of :none, :single, :double, :singleAccounting, :doubleAccounting, true
     # @return [Boolean]
     # @return [String]
-    # @note true is for backwards compatability and is reassigned to :single
+    # @note true is for backwards compatibility and is reassigned to :single
     attr_reader :u
 
     # @see u
     def u=(v)
-      v = :single if (v == true || v == 1 || v == :true || v == 'true')
+      v = :single if v == true || v == 1 || v == :true || v == 'true'
       set_run_style :validate_cell_u, :u, v
     end
 
@@ -138,7 +158,7 @@ module Axlsx
 
     # @param [String] v The 8 character representation for an rgb color #FFFFFFFF"
     def color=(v)
-      @color = v.is_a?(Color) ? v : Color.new(:rgb => v)
+      @color = v.is_a?(Color) ? v : Color.new(rgb: v)
     end
 
     # The inline sz property for the cell
@@ -146,7 +166,9 @@ module Axlsx
     attr_reader :sz
 
     # @see sz
-    def sz=(v) set_run_style :validate_unsigned_int, :sz, v; end
+    def sz=(v)
+      set_run_style :validate_unsigned_int, :sz, v
+    end
 
     # The inline vertical alignment property for the cell
     # this must be one of [:baseline, :subscript, :superscript]
@@ -197,30 +219,30 @@ module Axlsx
       return unless INLINE_STYLES.include?(attr.to_sym)
 
       Axlsx.send(validator, value) unless validator.nil?
-      self.instance_variable_set :"@#{attr.to_s}", value
+      instance_variable_set :"@#{attr}", value
     end
 
     # Serializes the RichTextRun
     # @param [String] str
     # @return [String]
-    def to_xml_string(str = '')
+    def to_xml_string(str = +'')
       valid = RichTextRun::INLINE_STYLES
-      data = Hash[Axlsx.instance_values_for(self).map { |k, v| [k.to_sym, v] }]
-      data = data.select { |key, value| valid.include?(key) && !value.nil? }
+      data = Axlsx.instance_values_for(self).transform_keys(&:to_sym)
+      data = data.select { |key, value| !value.nil? && valid.include?(key) }
 
       str << '<r><rPr>'
-      data.keys.each do |key|
+      data.each do |key, val|
         case key
         when :font_name
-          str << ('<rFont val="' << font_name << '"/>')
+          str << '<rFont val="' << font_name << '"/>'
         when :color
-          str << data[key].to_xml_string
+          str << val.to_xml_string
         else
-          str << ('<' << key.to_s << ' val="' << xml_value(data[key]) << '"/>')
+          str << '<' << key.to_s << ' val="' << xml_value(val) << '"/>'
         end
       end
-      clean_value = Axlsx::trust_input ? @value.to_s : ::CGI.escapeHTML(Axlsx::sanitize(@value.to_s))
-      str << ('</rPr><t>' << clean_value << '</t></r>')
+      clean_value = Axlsx.trust_input ? @value.to_s : ::CGI.escapeHTML(Axlsx.sanitize(@value.to_s))
+      str << '</rPr><t>' << clean_value << '</t></r>'
     end
 
     private
@@ -240,7 +262,7 @@ module Axlsx
       return sz if sz
 
       font = styles.fonts[styles.cellXfs[style].fontId] || styles.fonts[0]
-      (font.b || (defined?(@b) && @b)) ? (font.sz * 1.5) : font.sz
+      font.b || (defined?(@b) && @b) ? (font.sz * 1.5) : font.sz
     end
 
     def style
@@ -253,7 +275,7 @@ module Axlsx
 
     # Converts the value to the correct XML representation (fixes issues with
     # Numbers)
-    def xml_value value
+    def xml_value(value)
       if value == true
         1
       elsif value == false

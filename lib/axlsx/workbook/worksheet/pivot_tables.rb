@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Axlsx
   # A simple, self serializing class for storing pivot tables
   class PivotTables < SimpleTypedList
@@ -5,7 +7,7 @@ module Axlsx
     def initialize(worksheet)
       raise ArgumentError, "you must provide a worksheet" unless worksheet.is_a?(Worksheet)
 
-      super PivotTable
+      super(PivotTable)
       @worksheet = worksheet
     end
 

@@ -1,5 +1,7 @@
+# frozen_string_literal: true
+
 module Axlsx
-  # The Pie3DChart is a three dimentional piechart (who would have guessed?) that you can add to your worksheet.
+  # The Pie3DChart is a three dimensional pie chart (who would have guessed?) that you can add to your worksheet.
   # @see Worksheet#add_chart
   # @see Chart#add_series
   # @see README for an example
@@ -20,19 +22,19 @@ module Axlsx
     # @see View3D
     def initialize(frame, options = {})
       @vary_colors = true
-      super(frame, options)
+      super
       @series_type = PieSeries
-      @view_3D = View3D.new({ :rot_x => 30, :perspective => 30 }.merge(options))
+      @view_3D = View3D.new({ rot_x: 30, perspective: 30 }.merge(options))
       @d_lbls = nil
     end
 
     # Serializes the object
     # @param [String] str
     # @return [String]
-    def to_xml_string(str = '')
-      super(str) do
+    def to_xml_string(str = +'')
+      super do
         str << '<c:pie3DChart>'
-        str << ('<c:varyColors val="' << vary_colors.to_s << '"/>')
+        str << '<c:varyColors val="' << vary_colors.to_s << '"/>'
         @series.each { |ser| ser.to_xml_string(str) }
         d_lbls.to_xml_string(str) if @d_lbls
         str << '</c:pie3DChart>'

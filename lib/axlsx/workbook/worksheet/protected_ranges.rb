@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Axlsx
   # A self serializing collection of ranges that should be protected in
   # the worksheet
@@ -7,7 +9,7 @@ module Axlsx
     def initialize(worksheet)
       raise ArgumentError, 'You must provide a worksheet' unless worksheet.is_a?(Worksheet)
 
-      super ProtectedRange
+      super(ProtectedRange)
       @worksheet = worksheet
     end
 
@@ -17,16 +19,16 @@ module Axlsx
       sqref = if cells.is_a?(String)
                 cells
               elsif cells.is_a?(SimpleTypedList) || cells.is_a?(Array)
-                Axlsx::cell_range(cells, false)
+                Axlsx.cell_range(cells, false)
               end
-      self << ProtectedRange.new(:sqref => sqref, :name => "Range#{size}")
+      self << ProtectedRange.new(sqref: sqref, name: "Range#{size}")
       last
     end
 
     # Serializes the protected ranges
     # @param [String] str
     # @return [String]
-    def to_xml_string(str = '')
+    def to_xml_string(str = +'')
       return if empty?
 
       str << '<protectedRanges>'

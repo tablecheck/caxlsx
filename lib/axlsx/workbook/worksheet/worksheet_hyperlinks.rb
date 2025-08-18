@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Axlsx
   # A collection of hyperlink objects for a worksheet
   class WorksheetHyperlinks < SimpleTypedList
@@ -6,7 +8,7 @@ module Axlsx
     def initialize(worksheet)
       DataTypeValidator.validate "Hyperlinks.worksheet", [Worksheet], worksheet
       @worksheet = worksheet
-      super WorksheetHyperlink
+      super(WorksheetHyperlink)
     end
 
     # Creates and adds a new hyperlink based on the options provided
@@ -22,12 +24,12 @@ module Axlsx
     def relationships
       return [] if empty?
 
-      map { |hyperlink| hyperlink.relationship }
+      map(&:relationship)
     end
 
-    # seralize the collection of hyperlinks
+    # serialize the collection of hyperlinks
     # @return [String]
-    def to_xml_string(str = '')
+    def to_xml_string(str = +'')
       return if empty?
 
       str << '<hyperlinks>'

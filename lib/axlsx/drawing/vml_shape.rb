@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Axlsx
   # A VmlShape is used to position and render a comment.
   class VmlShape
@@ -22,7 +24,7 @@ module Axlsx
       @right_offset = 50
       @bottom_offset = 5
       @visible = true
-      @id = (0...8).map { 65.+(rand(25)).chr }.join
+      @id = Array.new(8) { rand(65..89).chr }.join
       parse_options options
       yield self if block_given?
     end
@@ -35,29 +37,29 @@ module Axlsx
     # serialize the shape to a string
     # @param [String] str
     # @return [String]
-    def to_xml_string(str = '')
-      str << <<SHAME_ON_YOU
+    def to_xml_string(str = +'')
+      str << <<~XML
 
-<v:shape id="#{@id}" type="#_x0000_t202" fillcolor="#ffffa1 [80]" o:insetmode="auto"
-  style="visibility:#{@visible ? 'visible' : 'hidden'}">
-  <v:fill color2="#ffffa1 [80]"/>
-  <v:shadow on="t" obscured="t"/>
-  <v:path o:connecttype="none"/>
-  <v:textbox style='mso-fit-text-with-word-wrap:t'>
-   <div style='text-align:left'></div>
-  </v:textbox>
+        <v:shape id="#{@id}" type="#_x0000_t202" fillcolor="#ffffa1 [80]" o:insetmode="auto"
+          style="visibility:#{@visible ? 'visible' : 'hidden'}">
+          <v:fill color2="#ffffa1 [80]"/>
+          <v:shadow on="t" obscured="t"/>
+          <v:path o:connecttype="none"/>
+          <v:textbox style='mso-fit-text-with-word-wrap:t'>
+           <div style='text-align:left'></div>
+          </v:textbox>
 
-  <x:ClientData ObjectType="Note">
-   <x:MoveWithCells/>
-   <x:SizeWithCells/>
-   <x:Anchor>#{left_column}, #{left_offset}, #{top_row}, #{top_offset}, #{right_column}, #{right_offset}, #{bottom_row}, #{bottom_offset}</x:Anchor>
-   <x:AutoFill>False</x:AutoFill>
-   <x:Row>#{row}</x:Row>
-   <x:Column>#{column}</x:Column>
-   #{@visible ? '<x:Visible/>' : ''}
-  </x:ClientData>
- </v:shape>
-SHAME_ON_YOU
+          <x:ClientData ObjectType="Note">
+           <x:MoveWithCells/>
+           <x:SizeWithCells/>
+           <x:Anchor>#{left_column}, #{left_offset}, #{top_row}, #{top_offset}, #{right_column}, #{right_offset}, #{bottom_row}, #{bottom_offset}</x:Anchor>
+           <x:AutoFill>False</x:AutoFill>
+           <x:Row>#{row}</x:Row>
+           <x:Column>#{column}</x:Column>
+           #{'<x:Visible/>' if @visible}
+          </x:ClientData>
+         </v:shape>
+      XML
     end
   end
 end

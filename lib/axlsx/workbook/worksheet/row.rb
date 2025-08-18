@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Axlsx
   # A Row is a single row in a worksheet.
   # @note The recommended way to manage rows and cells is to use Worksheet#add_row
@@ -86,12 +88,9 @@ module Axlsx
     # @param [Integer] r_index The row index, 0 based.
     # @param [String] str The string this rows xml will be appended to.
     # @return [String]
-    def to_xml_string(r_index, str = '')
-      serialized_tag('row', str, :r => r_index + 1) do
-        tmp = '' # time / memory tradeoff, lots of calls to rubyzip costs more
-                 # time..
-        each_with_index { |cell, c_index| cell.to_xml_string(r_index, c_index, tmp) }
-        str << tmp
+    def to_xml_string(r_index, str = +'')
+      serialized_tag('row', str, r: Axlsx.row_ref(r_index)) do
+        each_with_index { |cell, c_index| cell.to_xml_string(r_index, c_index, str) }
       end
     end
 
@@ -130,7 +129,7 @@ module Axlsx
     # @see height
     def height=(v)
       unless v.nil?
-        Axlsx::validate_unsigned_numeric(v)
+        Axlsx.validate_unsigned_numeric(v)
         @custom_height = true
         @ht = v
       end
@@ -144,7 +143,10 @@ module Axlsx
     private
 
     # assigns the owning worksheet for this row
-    def worksheet=(v) DataTypeValidator.validate :row_worksheet, Worksheet, v; @worksheet = v; end
+    def worksheet=(v)
+      DataTypeValidator.validate :row_worksheet, Worksheet, v
+      @worksheet = v
+    end
 
     # Converts values, types, and style options into cells and associates them with this row.
     # A new cell is created for each item in the values array.
@@ -161,7 +163,7 @@ module Axlsx
       types, style, formula_values, escape_formulas, offset = options.delete(:types), options.delete(:style), options.delete(:formula_values), options.delete(:escape_formulas), options.delete(:offset)
       offset.to_i.times { |index| self[index] = Cell.new(self) } if offset
       values.each_with_index do |value, index|
-        options[:style] = style.is_a?(Array) ? style[index] : style if style
+        options[:style] = (style.is_a?(Array) ? style[index] : style) || worksheet.column_info[index]&.style
         options[:type] = types.is_a?(Array) ? types[index] : types if types
         options[:escape_formulas] = escape_formulas.is_a?(Array) ? escape_formulas[index] : escape_formulas unless escape_formulas.nil?
         options[:formula_value] = formula_values[index] if formula_values.is_a?(Array)

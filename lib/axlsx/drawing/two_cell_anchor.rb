@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Axlsx
   # This class details the anchor points for drawings.
   # @note The recommended way to manage drawings and charts is Worksheet#add_chart. Anchors are specified by the :start_at and :end_at options to that method.
@@ -33,11 +35,11 @@ module Axlsx
     def initialize(drawing, options = {})
       @drawing = drawing
       drawing.anchors << self
-      @from, @to =  Marker.new, Marker.new(:col => 5, :row => 10)
+      @from, @to =  Marker.new, Marker.new(col: 5, row: 10)
       parse_options options
 
       # bit of a hack to work around the fact that the coords for start at and end at
-      # are passed in as an array when specified in intialization options - however
+      # are passed in as an array when specified in initialization options - however
       start_at(*options[:start_at]) if options[:start_at]
       end_at(*options[:end_at]) if options[:end_at]
     end
@@ -79,7 +81,7 @@ module Axlsx
     # Serializes the object
     # @param [String] str
     # @return [String]
-    def to_xml_string(str = '')
+    def to_xml_string(str = +'')
       str << '<xdr:twoCellAnchor>'
       str << '<xdr:from>'
       from.to_xml_string str

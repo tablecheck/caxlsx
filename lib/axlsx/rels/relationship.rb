@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Axlsx
   # A relationship defines a reference between package parts.
   # @note Packages automatically manage relationships.
@@ -13,7 +15,7 @@ module Axlsx
       #
       # This should be called before serializing a package (see {Package#serialize} and
       # {Package#to_stream}) to make sure that serialization is idempotent (i.e.
-      # Relationship instances are generated with the same IDs everytime the package
+      # Relationship instances are generated with the same IDs every time the package
       # is serialized).
       def initialize_ids_cache
         Thread.current[:axlsx_relationship_ids_cache] = {}
@@ -41,7 +43,7 @@ module Axlsx
     end
 
     # The id of the relationship (eg. "rId123"). Most instances get their own unique id.
-    # However, some instances need to share the same id – see {#should_use_same_id_as?}
+    # However, some instances need to share the same id – see {#ids_cache_key}
     # for details.
     # @return [String]
     attr_reader :Id
@@ -90,20 +92,33 @@ module Axlsx
     end
 
     # @see Target
-    def Target=(v) Axlsx::validate_string v; @Target = v end
+    def Target=(v)
+      Axlsx.validate_string v
+      @Target = v
+    end
+
     # @see Type
-    def Type=(v) Axlsx::validate_relationship_type v; @Type = v end
+    def Type=(v)
+      Axlsx.validate_relationship_type v
+      @Type = v
+    end
 
     # @see TargetMode
-    def TargetMode=(v) RestrictionValidator.validate 'Relationship.TargetMode', [:External, :Internal], v; @TargetMode = v; end
+    def TargetMode=(v)
+      RestrictionValidator.validate 'Relationship.TargetMode', [:External, :Internal], v
+      @TargetMode = v
+    end
 
     # serialize relationship
     # @param [String] str
     # @return [String]
-    def to_xml_string(str = '')
+    def to_xml_string(str = +'')
       h = Axlsx.instance_values_for(self).reject { |k, _| k == "source_obj" }
       str << '<Relationship '
-      str << (h.map { |key, value| '' << key.to_s << '="' << Axlsx::coder.encode(value.to_s) << '"' }.join(' '))
+      h.each_with_index do |key_value, index|
+        str << ' ' unless index == 0
+        str << key_value.first.to_s << '="' << Axlsx.coder.encode(key_value.last.to_s) << '"'
+      end
       str << '/>'
     end
 

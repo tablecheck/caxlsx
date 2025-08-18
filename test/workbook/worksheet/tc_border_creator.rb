@@ -1,6 +1,8 @@
-require 'tc_helper.rb'
+# frozen_string_literal: true
 
-class TestBorderCreator < Test::Unit::TestCase
+require 'tc_helper'
+
+class TestBorderCreator < Minitest::Test
   def setup
     @p = Axlsx::Package.new
     @wb = @p.workbook
@@ -11,27 +13,32 @@ class TestBorderCreator < Test::Unit::TestCase
     @ws.add_row [1, 2, 3]
 
     bc = Axlsx::BorderCreator.new(worksheet: @ws, cells: @ws["A1:B1"])
+
     assert_equal bc.instance_variable_get(:@edges), Axlsx::Border::EDGES
-    assert_equal bc.instance_variable_get(:@style), :thin
-    assert_equal bc.instance_variable_get(:@color), "000000"
+    assert_equal(:thin, bc.instance_variable_get(:@style))
+    assert_equal("000000", bc.instance_variable_get(:@color))
 
     bc = Axlsx::BorderCreator.new(worksheet: @ws, cells: @ws["A1:B1"], edges: [:top], style: :thick, color: "ffffff")
-    assert_equal bc.instance_variable_get(:@edges), [:top]
-    assert_equal bc.instance_variable_get(:@style), :thick
-    assert_equal bc.instance_variable_get(:@color), "ffffff"
+
+    assert_equal([:top], bc.instance_variable_get(:@edges))
+    assert_equal(:thick, bc.instance_variable_get(:@style))
+    assert_equal("ffffff", bc.instance_variable_get(:@color))
   end
 
   def test_initialize_edges
     @ws.add_row [1, 2, 3]
 
     bc = Axlsx::BorderCreator.new(worksheet: @ws, cells: @ws["A1:B1"], edges: nil)
+
     assert_equal bc.instance_variable_get(:@edges), Axlsx::Border::EDGES
 
     bc = Axlsx::BorderCreator.new(worksheet: @ws, cells: @ws["A1:B1"], edges: :all)
+
     assert_equal bc.instance_variable_get(:@edges), Axlsx::Border::EDGES
 
     bc = Axlsx::BorderCreator.new(worksheet: @ws, cells: @ws["A1:B1"], edges: [])
-    assert_equal bc.instance_variable_get(:@edges), []
+
+    assert_empty(bc.instance_variable_get(:@edges))
 
     assert_raises(ArgumentError) do
       bc = Axlsx::BorderCreator.new(worksheet: @ws, cells: @ws["A1:B1"], edges: [:foo])
@@ -62,17 +69,17 @@ class TestBorderCreator < Test::Unit::TestCase
     assert_equal 5, @ws.styles.borders.size
 
     assert_equal 2, @ws.styles.borders[2].prs.size
-    assert_equal ["FFFFFFFF"], @ws.styles.borders[2].prs.map(&:color).map(&:rgb).uniq
+    assert_equal ["FFFFFFFF"], @ws.styles.borders[2].prs.map { |b| b.color.rgb }.uniq
     assert_equal [:thick], @ws.styles.borders[2].prs.map(&:style).uniq
     assert_equal [:left, :top], @ws.styles.borders[2].prs.map(&:name)
 
     assert_equal 1, @ws.styles.borders[3].prs.size
-    assert_equal ["FFFFFFFF"], @ws.styles.borders[3].prs.map(&:color).map(&:rgb).uniq
+    assert_equal ["FFFFFFFF"], @ws.styles.borders[3].prs.map { |b| b.color.rgb }.uniq
     assert_equal [:thick], @ws.styles.borders[3].prs.map(&:style).uniq
     assert_equal [:top], @ws.styles.borders[3].prs.map(&:name)
 
     assert_equal 1, @ws.styles.borders[4].prs.size
-    assert_equal ["FFFFFFFF"], @ws.styles.borders[4].prs.map(&:color).map(&:rgb).uniq
+    assert_equal ["FFFFFFFF"], @ws.styles.borders[4].prs.map { |b| b.color.rgb }.uniq
     assert_equal [:thick], @ws.styles.borders[4].prs.map(&:style).uniq
     assert_equal [:left], @ws.styles.borders[4].prs.map(&:name)
   end

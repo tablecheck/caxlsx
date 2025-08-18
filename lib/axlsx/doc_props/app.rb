@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Axlsx
   # App represents the app.xml document. The attributes for this object are primarily managed by the application the end user uses to edit the document. None of the attributes are required to serialize a valid xlsx object.
   # @see shared-documentPropertiesExtended.xsd
@@ -73,7 +75,7 @@ module Axlsx
     attr_reader :paragraphs
     alias :Paragraphs :paragraphs
 
-    # @return [Intger] The number of slides in the document.
+    # @return [Integer] The number of slides in the document.
     attr_reader :slides
     alias :Slides :slides
 
@@ -119,7 +121,7 @@ module Axlsx
 
     # @return [String] The name of the application
     attr_reader :application
-    alias :Applicatoin :application
+    alias :Application :application
 
     # @return [String] The version of the application.
     attr_reader :app_version
@@ -130,96 +132,163 @@ module Axlsx
     alias :DocSecurity :doc_security
 
     # Sets the template property of your app.xml file
-    def template=(v) Axlsx::validate_string v; @template = v; end
+    def template=(v)
+      Axlsx.validate_string v
+      @template = v
+    end
     alias :Template= :template=
 
     # Sets the manager property of your app.xml file
-    def manager=(v) Axlsx::validate_string v; @manager = v; end
+    def manager=(v)
+      Axlsx.validate_string v
+      @manager = v
+    end
     alias :Manager= :manager=
 
     # Sets the company property of your app.xml file
-    def company=(v) Axlsx::validate_string v; @company = v; end
+    def company=(v)
+      Axlsx.validate_string v
+      @company = v
+    end
     alias :Company= :company=
+
     # Sets the pages property of your app.xml file
-    def pages=(v) Axlsx::validate_int v; @pages = v; end
+    def pages=(v)
+      Axlsx.validate_int v
+      @pages = v
+    end
 
     # Sets the words property of your app.xml file
-    def words=(v) Axlsx::validate_int v; @words = v; end
+    def words=(v)
+      Axlsx.validate_int v
+      @words = v
+    end
     alias :Words= :words=
 
     # Sets the characters property of your app.xml file
-    def characters=(v) Axlsx::validate_int v; @characters = v; end
+    def characters=(v)
+      Axlsx.validate_int v
+      @characters = v
+    end
     alias :Characters= :characters=
 
     # Sets the presentation_format property of your app.xml file
-    def presentation_format=(v) Axlsx::validate_string v; @presentation_format = v; end
+    def presentation_format=(v)
+      Axlsx.validate_string v
+      @presentation_format = v
+    end
     alias :PresentationFormat= :presentation_format=
 
     # Sets the lines property of your app.xml file
-    def lines=(v) Axlsx::validate_int v; @lines = v; end
+    def lines=(v)
+      Axlsx.validate_int v
+      @lines = v
+    end
     alias :Lines= :lines=
 
     # Sets the paragraphs property of your app.xml file
-    def paragraphs=(v) Axlsx::validate_int v; @paragraphs = v; end
+    def paragraphs=(v)
+      Axlsx.validate_int v
+      @paragraphs = v
+    end
     alias :Paragraphs= :paragraphs=
 
     # sets the slides property of your app.xml file
-    def slides=(v) Axlsx::validate_int v; @slides = v; end
+    def slides=(v)
+      Axlsx.validate_int v
+      @slides = v
+    end
     alias :Slides= :slides=
 
     # sets the notes property of your app.xml file
-    def notes=(v) Axlsx::validate_int v; @notes = v; end
+    def notes=(v)
+      Axlsx.validate_int v
+      @notes = v
+    end
     alias :Notes= :notes=
 
     # Sets the total_time property of your app.xml file
-    def total_time=(v) Axlsx::validate_int v; @total_time = v; end
+    def total_time=(v)
+      Axlsx.validate_int v
+      @total_time = v
+    end
     alias :TotalTime= :total_time=
 
     # Sets the hidden_slides property of your app.xml file
-    def hidden_slides=(v) Axlsx::validate_int v; @hidden_slides = v; end
+    def hidden_slides=(v)
+      Axlsx.validate_int v
+      @hidden_slides = v
+    end
     alias :HiddenSlides= :hidden_slides=
 
     # Sets the m_m_clips property of your app.xml file
-    def m_m_clips=(v) Axlsx::validate_int v; @m_m_clips = v; end
+    def m_m_clips=(v)
+      Axlsx.validate_int v
+      @m_m_clips = v
+    end
     alias :MMClips= :m_m_clips=
 
     # Sets the scale_crop property of your app.xml file
-    def scale_crop=(v) Axlsx::validate_boolean v; @scale_crop = v; end
+    def scale_crop=(v)
+      Axlsx.validate_boolean v
+      @scale_crop = v
+    end
     alias :ScaleCrop= :scale_crop=
 
     # Sets the links_up_to_date property of your app.xml file
-    def links_up_to_date=(v) Axlsx::validate_boolean v; @links_up_to_date = v; end
+    def links_up_to_date=(v)
+      Axlsx.validate_boolean v
+      @links_up_to_date = v
+    end
     alias :LinksUpToDate= :links_up_to_date=
 
     # Sets the characters_with_spaces property of your app.xml file
-    def characters_with_spaces=(v) Axlsx::validate_int v; @characters_with_spaces = v; end
+    def characters_with_spaces=(v)
+      Axlsx.validate_int v
+      @characters_with_spaces = v
+    end
     alias :CharactersWithSpaces= :characters_with_spaces=
 
     # Sets the share_doc property of your app.xml file
-    def shared_doc=(v) Axlsx::validate_boolean v; @shared_doc = v; end
+    def shared_doc=(v)
+      Axlsx.validate_boolean v
+      @shared_doc = v
+    end
     alias :SharedDoc= :shared_doc=
 
     # Sets the hyperlink_base property of your app.xml file
-    def hyperlink_base=(v) Axlsx::validate_string v; @hyperlink_base = v; end
+    def hyperlink_base=(v)
+      Axlsx.validate_string v
+      @hyperlink_base = v
+    end
     alias :HyperlinkBase= :hyperlink_base=
 
     # Sets the HyperLinksChanged property of your app.xml file
-    def hyperlinks_changed=(v) Axlsx::validate_boolean v; @hyperlinks_changed = v; end
+    def hyperlinks_changed=(v)
+      Axlsx.validate_boolean v
+      @hyperlinks_changed = v
+    end
     alias :HyperLinksChanged= :hyperlinks_changed=
 
     # Sets the app_version property of your app.xml file
-    def app_version=(v) Axlsx::validate_string v; @app_version = v; end
+    def app_version=(v)
+      Axlsx.validate_string v
+      @app_version = v
+    end
     alias :AppVersion= :app_version=
 
     # Sets the doc_security property of your app.xml file
-    def doc_security=(v) Axlsx::validate_int v; @doc_security = v; end
+    def doc_security=(v)
+      Axlsx.validate_int v
+      @doc_security = v
+    end
     alias :DocSecurity= :doc_security=
 
     # Serialize the app.xml document
     # @return [String]
-    def to_xml_string(str = '')
+    def to_xml_string(str = +'')
       str << '<?xml version="1.0" encoding="UTF-8"?>'
-      str << ('<Properties xmlns="' << APP_NS << '" xmlns:vt="' << APP_NS_VT << '">')
+      str << '<Properties xmlns="' << APP_NS << '" xmlns:vt="' << APP_NS_VT << '">'
       Axlsx.instance_values_for(self).each do |key, value|
         node_name = Axlsx.camel(key)
         str << "<#{node_name}>#{value}</#{node_name}>"

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Axlsx
   # The filterColumn collection identifies a particular column in the AutoFilter
   # range and specifies filter information that has been applied to this column.
@@ -8,7 +10,7 @@ module Axlsx
     include Axlsx::SerializedAttributes
 
     # Creates a new FilterColumn object
-    # @note This class yeilds its filter object as that is where the vast majority of processing will be done
+    # @note This class yields its filter object as that is where the vast majority of processing will be done
     # @param [Integer|Cell] col_id The zero based index for the column to which this filter will be applied
     # @param [Symbol] filter_type The symbolized class name of the filter to apply to this column.
     # @param [Hash] options options for this object and the filter
@@ -26,7 +28,7 @@ module Axlsx
     serializable_attributes :col_id, :hidden_button, :show_button
 
     # Allowed filters
-    FILTERS = [:filters] # , :top10, :custom_filters, :dynamic_filters, :color_filters, :icon_filters]
+    FILTERS = [:filters].freeze # , :top10, :custom_filters, :dynamic_filters, :color_filters, :icon_filters]
 
     # Zero-based index indicating the AutoFilter column to which this filter information applies.
     # @return [Integer]
@@ -41,7 +43,9 @@ module Axlsx
     # the filter button can be hidden, and not drawn.
     # @return [Boolean]
     def show_button
-      @show_button ||= true
+      return @show_button if defined?(@show_button)
+
+      true
     end
 
     # Flag indicating whether the AutoFilter button for this column is hidden.
@@ -81,12 +85,14 @@ module Axlsx
     # @return [Boolean]
     def show_button=(show)
       Axlsx.validate_boolean show
-      @show_botton = show
+      @show_button = show
     end
 
     # Serialize the object to xml
-    def to_xml_string(str = '')
-      str << "<filterColumn #{serialized_attributes}>"
+    def to_xml_string(str = +'')
+      str << '<filterColumn '
+      serialized_attributes(str)
+      str << '>'
       @filter.to_xml_string(str)
       str << "</filterColumn>"
     end

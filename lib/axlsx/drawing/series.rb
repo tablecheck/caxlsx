@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Axlsx
   # A Series defines the common series attributes and is the super class for all concrete series types.
   # @note The recommended way to manage series is to use Chart#add_series
@@ -38,7 +40,10 @@ module Axlsx
     end
 
     # @see order
-    def order=(v) Axlsx::validate_unsigned_int(v); @order = v; end
+    def order=(v)
+      Axlsx.validate_unsigned_int(v)
+      @order = v
+    end
 
     # @see title
     def title=(v)
@@ -50,15 +55,18 @@ module Axlsx
     private
 
     # assigns the chart for this series
-    def chart=(v) DataTypeValidator.validate "Series.chart", Chart, v; @chart = v; end
+    def chart=(v)
+      DataTypeValidator.validate "Series.chart", Chart, v
+      @chart = v
+    end
 
     # Serializes the object
     # @param [String] str
     # @return [String]
-    def to_xml_string(str = '')
+    def to_xml_string(str = +'')
       str << '<c:ser>'
-      str << ('<c:idx val="' << index.to_s << '"/>')
-      str << ('<c:order val="' << (order || index).to_s << '"/>')
+      str << '<c:idx val="' << index.to_s << '"/>'
+      str << '<c:order val="' << (order || index).to_s << '"/>'
       title.to_xml_string(str) unless title.nil?
       yield if block_given?
       str << '</c:ser>'

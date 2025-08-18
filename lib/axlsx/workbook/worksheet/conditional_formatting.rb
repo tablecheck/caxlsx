@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Axlsx
   # Conditional formatting allows styling of ranges based on functions
   #
@@ -59,9 +61,15 @@ module Axlsx
     end
 
     # @see rules
-    def rules=(v); @rules = v end
+    def rules=(v)
+      @rules = v
+    end
+
     # @see sqref
-    def sqref=(v); Axlsx::validate_string(v); @sqref = v end
+    def sqref=(v)
+      Axlsx.validate_string(v)
+      @sqref = v
+    end
 
     # Serializes the conditional formatting element
     # @example Conditional Formatting XML looks like:
@@ -72,9 +80,12 @@ module Axlsx
     #    </conditionalFormatting>
     # @param [String] str
     # @return [String]
-    def to_xml_string(str = '')
-      str << ('<conditionalFormatting sqref="' << sqref << '">')
-      str << rules.collect { |rule| rule.to_xml_string }.join(' ')
+    def to_xml_string(str = +'')
+      str << '<conditionalFormatting sqref="' << sqref << '">'
+      rules.each_with_index do |rule, index|
+        str << ' ' unless index == 0
+        rule.to_xml_string(str)
+      end
       str << '</conditionalFormatting>'
     end
   end

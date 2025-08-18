@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Axlsx
   # 3D attributes for a chart.
   class View3D
@@ -16,10 +18,10 @@ module Axlsx
     end
 
     # Validation for hPercent
-    H_PERCENT_REGEX = /0*(([5-9])|([1-9][0-9])|([1-4][0-9][0-9])|500)/
+    H_PERCENT_REGEX = /0*(([5-9])|([1-9][0-9])|([1-4][0-9][0-9])|500)/.freeze
 
     # validation for depthPercent
-    DEPTH_PERCENT_REGEX = /0*(([2-9][0-9])|([1-9][0-9][0-9])|(1[0-9][0-9][0-9])|2000)/
+    DEPTH_PERCENT_REGEX = /0*(([2-9][0-9])|([1-9][0-9][0-9])|(1[0-9][0-9][0-9])|2000)/.freeze
 
     # x rotation for the chart
     # must be between -90 and 90
@@ -76,11 +78,17 @@ module Axlsx
     alias :rotY= :rot_y=
 
     # @see depth_percent
-    def depth_percent=(v) RegexValidator.validate "#{self.class}.depth_percent", DEPTH_PERCENT_REGEX, v; @depth_percent = v; end
+    def depth_percent=(v)
+      RegexValidator.validate "#{self.class}.depth_percent", DEPTH_PERCENT_REGEX, v
+      @depth_percent = v
+    end
     alias :depthPercent= :depth_percent=
 
     # @see r_ang_ax
-    def r_ang_ax=(v) Axlsx::validate_boolean(v); @r_ang_ax = v; end
+    def r_ang_ax=(v)
+      Axlsx.validate_boolean(v)
+      @r_ang_ax = v
+    end
     alias :rAngAx= :r_ang_ax=
 
     # @see perspective
@@ -94,7 +102,7 @@ module Axlsx
     # Serializes the object
     # @param [String] str
     # @return [String]
-    def to_xml_string(str = '')
+    def to_xml_string(str = +'')
       str << '<c:view3D>'
       %w(rot_x h_percent rot_y depth_percent r_ang_ax perspective).each do |key|
         str << element_for_attribute(key, 'c')
@@ -104,12 +112,12 @@ module Axlsx
 
     private
 
-    # Note: move this to Axlsx module if we find the smae pattern elsewhere.
+    # NOTE: move this to Axlsx module if we find the same pattern elsewhere.
     def element_for_attribute(name, namespace = '')
       val = Axlsx.instance_values_for(self)[name]
-      return "" if val == nil
+      return "" if val.nil?
 
-      "<%s:%s val='%s'/>" % [namespace, Axlsx::camel(name, false), val]
+      format("<%s:%s val='%s'/>", namespace, Axlsx.camel(name, false), val)
     end
   end
 end

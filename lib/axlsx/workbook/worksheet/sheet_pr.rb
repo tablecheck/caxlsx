@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Axlsx
   # The SheetPr class manages serialization of a worksheet's sheetPr element.
   class SheetPr
@@ -16,7 +18,7 @@ module Axlsx
                             :sync_ref
 
     # These attributes are all boolean so I'm doing a bit of a hand
-    # waving magic show to set up the attriubte accessors
+    # waving magic show to set up the attribute accessors
     boolean_attr_accessor :sync_horizontal,
                           :sync_vertical,
                           :transition_evaluation,
@@ -48,9 +50,11 @@ module Axlsx
     # Serialize the object
     # @param [String] str serialized output will be appended to this object if provided.
     # @return [String]
-    def to_xml_string(str = '')
+    def to_xml_string(str = +'')
       update_properties
-      str << "<sheetPr #{serialized_attributes}>"
+      str << '<sheetPr '
+      serialized_attributes(str)
+      str << '>'
       tab_color.to_xml_string(str, 'tabColor') if tab_color
       outline_pr.to_xml_string(str) if @outline_pr
       page_setup_pr.to_xml_string(str)
@@ -71,14 +75,14 @@ module Axlsx
 
     # @see tab_color
     def tab_color=(v)
-      @tab_color = Color.new(:rgb => v)
+      @tab_color = Color.new(rgb: v)
     end
 
     private
 
     def update_properties
       page_setup_pr.fit_to_page = worksheet.fit_to_page?
-      if worksheet.auto_filter.columns.size > 0
+      unless worksheet.auto_filter.columns.empty?
         self.filter_mode = 1
         self.enable_format_conditions_calculation = 1
       end

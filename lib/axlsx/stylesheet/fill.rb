@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Axlsx
   # The Fill is a formatting object that manages the background color, and pattern for cells.
   # @note The recommended way to manage styles in your workbook is to use Styles#add_style.
@@ -19,13 +21,16 @@ module Axlsx
     # Serializes the object
     # @param [String] str
     # @return [String]
-    def to_xml_string(str = '')
+    def to_xml_string(str = +'')
       str << '<fill>'
       @fill_type.to_xml_string(str)
       str << '</fill>'
     end
 
     # @see fill_type
-    def fill_type=(v) DataTypeValidator.validate "Fill.fill_type", [PatternFill, GradientFill], v; @fill_type = v; end
+    def fill_type=(v)
+      DataTypeValidator.validate "Fill.fill_type", [PatternFill, GradientFill], v
+      @fill_type = v
+    end
   end
 end

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Axlsx
   # When multiple values are chosen to filter by, or when a group of date values are chosen to filter by,
   # this object groups those criteria together.
@@ -11,7 +13,7 @@ module Axlsx
     # @option [Boolean] blank @see blank
     # @option [String] calendar_type @see calendar_type
     # @option [Array] filter_items An array of values that will be used to create filter objects.
-    # @option [Array] date_group_items An array of hases defining date group item filters to apply.
+    # @option [Array] date_group_items An array of hashes defining date group item filters to apply.
     # @note The recommended way to interact with filter objects is via AutoFilter#add_column
     # @example
     #   ws.auto_filter.add_column(0, :filters, :blank => true, :calendar_type => 'japan', :filter_items => [100, 'a'])
@@ -22,7 +24,7 @@ module Axlsx
     serializable_attributes :blank, :calendar_type
 
     # Allowed calendar types
-    CALENDAR_TYPES = %w(gregorian gregorianUs gregorianMeFrench gregorianArabic hijri hebrew taiwan japan thai korea saka gregorianXlitEnglish gregorianXlitFrench none)
+    CALENDAR_TYPES = %w(gregorian gregorianUs gregorianMeFrench gregorianArabic hijri hebrew taiwan japan thai korea saka gregorianXlitEnglish gregorianXlitFrench none).freeze
 
     # Flag indicating whether to filter by blank.
     # @return [Boolean]
@@ -34,12 +36,12 @@ module Axlsx
     # even when those dates are not using the same calendar system / date formatting.
     attr_reader :calendar_type
 
-    # Tells us if the row of the cell provided should be filterd as it
+    # Tells us if the row of the cell provided should be filtered as it
     # does not meet any of the specified filter_items or
     # date_group_items restrictions.
     # @param [Cell] cell The cell to test against items
     # TODO implement this for date filters as well!
-    def apply(cell)
+    def apply(cell) # rubocop:disable Naming/PredicateMethod
       return false unless cell
 
       filter_items.each do |filter|
@@ -74,8 +76,10 @@ module Axlsx
     end
 
     # Serialize the object to xml
-    def to_xml_string(str = '')
-      str << "<filters #{serialized_attributes}>"
+    def to_xml_string(str = +'')
+      str << '<filters '
+      serialized_attributes(str)
+      str << '>'
       filter_items.each { |filter| filter.to_xml_string(str) }
       date_group_items.each { |date_group_item| date_group_item.to_xml_string(str) }
       str << '</filters>'
@@ -118,8 +122,8 @@ module Axlsx
 
       # Serializes the filter value object
       # @param [String] str The string to concact the serialization information to.
-      def to_xml_string(str = '')
-        str << "<filter val='#{@val.to_s}' />"
+      def to_xml_string(str = +'')
+        str << "<filter val='#{@val}' />"
       end
     end
 
@@ -134,7 +138,7 @@ module Axlsx
 
       # Creates a new DateGroupItem
       # @param [Hash] options A hash of options to use when
-      # instanciating the object
+      # instantiating the object
       # @option [String] date_time_grouping the part of the date this
       # filter should apply for grouping
       # @option [Integer|String] year @see year
@@ -153,7 +157,7 @@ module Axlsx
       serializable_attributes :date_time_grouping, :year, :month, :day, :hour, :minute, :second
 
       # Allowed date time groupings
-      DATE_TIME_GROUPING = %w(year month day hour minute second)
+      DATE_TIME_GROUPING = %w(year month day hour minute second).freeze
 
       # Grouping level
       # This must be one of year, month, day, hour, minute or second.
@@ -235,7 +239,7 @@ module Axlsx
 
       # Serialize the object to xml
       # @param [String] str The string object this serialization will be concatenated to.
-      def to_xml_string(str = '')
+      def to_xml_string(str = +'')
         serialized_tag('dateGroupItem', str)
       end
     end

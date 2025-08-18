@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Axlsx
   # Page setup properties of the worksheet
   # This class name is not a typo, its spec.
@@ -15,8 +17,7 @@ module Axlsx
 
     serializable_attributes :auto_page_breaks, :fit_to_page
 
-    attr_reader :auto_page_breaks
-    attr_reader :fit_to_page
+    attr_reader :auto_page_breaks, :fit_to_page
 
     # Flag indicating whether the Fit to Page print option is enabled.
     # @param [Boolean] value
@@ -35,8 +36,10 @@ module Axlsx
     end
 
     # serialize to xml
-    def to_xml_string(str = '')
-      str << ('<pageSetUpPr ' << serialized_attributes << '/>')
+    def to_xml_string(str = +'')
+      str << '<pageSetUpPr '
+      serialized_attributes(str)
+      str << '/>'
     end
   end
 end

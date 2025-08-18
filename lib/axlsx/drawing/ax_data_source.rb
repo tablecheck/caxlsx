@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Axlsx
   # An axis data source that can contain referenced or literal strings or numbers
   # @note only string data types are supported - mainly because we have not implemented a chart type that requires a numerical axis value
@@ -9,7 +11,7 @@ module Axlsx
       @tag_name = :cat
       @data_type = StrData
       @ref_tag_name = :strRef
-      super(options)
+      super
     end
 
     # allowed element tag names for serialization

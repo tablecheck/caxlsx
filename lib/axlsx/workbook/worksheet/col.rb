@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Axlsx
   # The Col class defines column attributes for columns in sheets.
   class Col
@@ -7,6 +9,7 @@ module Axlsx
 
     include Axlsx::OptionsParser
     include Axlsx::SerializedAttributes
+
     # Create a new Col objects
     # @param min First column affected by this 'column info' record.
     # @param max Last column affected by this 'column info' record.
@@ -86,7 +89,7 @@ module Axlsx
     # @see Col#outline
     def outline_level=(v)
       Axlsx.validate_unsigned_numeric(v)
-      raise ArgumentError, 'outlineLevel must be between 0 and 7' unless 0 <= v && v <= 7
+      raise ArgumentError, 'outlineLevel must be between 0 and 7' unless v >= 0 && v <= 7
 
       @outline_level = v
     end
@@ -108,34 +111,47 @@ module Axlsx
     def width=(v)
       # Removing this validation make a 10% difference in performance
       # as it is called EVERY TIME A CELL IS ADDED - the proper solution
-      # is to only set this if a calculated value is greated than the
+      # is to only set this if a calculated value is greater than the
       # current @width value.
       # TODO!!!
       # Axlsx.validate_unsigned_numeric(v) unless v == nil
-      @custom_width = @best_fit = v != nil
+      @custom_width = @best_fit = !v.nil?
       @width = v.nil? ? v : [v, MAX_WIDTH].min
     end
 
     # updates the width for this col based on the cells autowidth and
     # an optionally specified fixed width
     # @param [Cell] cell The cell to use in updating this col's width
-    # @param [Integer] fixed_width If this is specified the width is set
-    # to this value and the cell's attributes are ignored.
+    # @param [Numeric, :auto, :ignore, nil] fixed_width Decides how the width
+    # of the cell should be updated. If this is specified as as Numeric the
+    # width is set to this value and the cell's attributes are ignored. If set
+    # to `nil` or `:auto` and `use_autowidth` is true, it uses the autowidth of
+    # the cell. If set to `:ignore`, the cell's width is not changed. In any
+    # case the col's width is set to the new value only if the current width is
+    # smaller than the new one, so that the largest width of all cells in this
+    # column is used.
     # @param [Boolean] use_autowidth If this is false, the cell's
     # autowidth value will be ignored.
     def update_width(cell, fixed_width = nil, use_autowidth = true)
-      if fixed_width.is_a? Numeric
-        self.width = fixed_width
-      elsif use_autowidth
-        cell_width = cell.autowidth
-        self.width = cell_width unless (width || 0) > (cell_width || 0)
-      end
+      cell_width =
+        case fixed_width
+        when Numeric
+          fixed_width
+        when nil, :auto
+          cell.autowidth if use_autowidth
+        when :ignore
+          nil
+        else
+          raise ArgumentError, "fixed_with must be a Numeric, :auto, :ignore or nil, but is '#{fixed_width.inspect}'"
+        end
+
+      self.width = cell_width unless (width || 0) > (cell_width || 0)
     end
 
     # Serialize this columns data to an xml string
     # @param [String] str
     # @return [String]
-    def to_xml_string(str = '')
+    def to_xml_string(str = +'')
       serialized_tag('col', str)
     end
   end

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Axlsx
   # The GradientStop object represents a color point in a gradient.
   # @see Open Office XML Part 1 §18.8.24
@@ -20,16 +22,23 @@ module Axlsx
     end
 
     # @see color
-    def color=(v) DataTypeValidator.validate "GradientStop.color", Color, v; @color = v end
+    def color=(v)
+      DataTypeValidator.validate "GradientStop.color", Color, v
+      @color = v
+    end
+
     # @see position
-    def position=(v) DataTypeValidator.validate "GradientStop.position", Float, v, lambda { |arg| arg >= 0 && arg <= 1 }; @position = v end
+    def position=(v)
+      DataTypeValidator.validate "GradientStop.position", Float, v, ->(arg) { arg >= 0 && arg <= 1 }
+      @position = v
+    end
 
     # Serializes the object
     # @param [String] str
     # @return [String]
-    def to_xml_string(str = '')
-      str << ('<stop position="' << position.to_s << '">')
-      self.color.to_xml_string(str)
+    def to_xml_string(str = +'')
+      str << '<stop position="' << position.to_s << '">'
+      color.to_xml_string(str)
       str << '</stop>'
     end
   end

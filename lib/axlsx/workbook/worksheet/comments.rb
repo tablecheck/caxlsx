@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Axlsx
   # Comments is a collection of Comment objects for a worksheet
   class Comments < SimpleTypedList
@@ -18,7 +20,7 @@ module Axlsx
     # The part name for this object
     # @return [String]
     def pn
-      "#{COMMENT_PN % (index + 1)}"
+      format(COMMENT_PN, index + 1)
     end
 
     # Creates a new Comments object
@@ -35,7 +37,7 @@ module Axlsx
     # @note the author, text and ref options are required
     # @option options [String] author The name of the author for this comment
     # @option options [String] text The text for this comment
-    # @option options [Stirng|Cell] ref The cell that this comment is attached to.
+    # @option options [String|Cell] ref The cell that this comment is attached to.
     def add_comment(options = {})
       raise ArgumentError, "Comment require an author" unless options[:author]
       raise ArgumentError, "Comment requires text" unless options[:text]
@@ -62,11 +64,11 @@ module Axlsx
     # serialize the object
     # @param [String] str
     # @return [String]
-    def to_xml_string(str = "")
+    def to_xml_string(str = +'')
       str << '<?xml version="1.0" encoding="UTF-8"?>'
-      str << ('<comments xmlns="' << XML_NS << '"><authors>')
+      str << '<comments xmlns="' << XML_NS << '"><authors>'
       authors.each do |author|
-        str << ('<author>' << author.to_s << '</author>')
+        str << '<author>' << author.to_s << '</author>'
       end
       str << '</authors><commentList>'
       each do |comment|

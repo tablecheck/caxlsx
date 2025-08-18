@@ -1,5 +1,7 @@
+# frozen_string_literal: true
+
 module Axlsx
-  # The BarChart is a two dimentional barchart that you can add to your worksheet.
+  # The BarChart is a two dimensional barchart that you can add to your worksheet.
   # @see Worksheet#add_chart
   # @see Chart#add_series
   # @see Package#serialize
@@ -66,7 +68,7 @@ module Axlsx
     def initialize(frame, options = {})
       @vary_colors = true
       @gap_width, @overlap, @shape = nil, nil, nil
-      super(frame, options)
+      super
       @series_type = BarSeries
       @d_lbls = nil
     end
@@ -89,13 +91,13 @@ module Axlsx
     # space between bar or column clusters, as a percentage of the bar or column width.
     def gap_width=(v)
       RangeValidator.validate "BarChart.gap_width", 0, 500, v
-      @gap_width = (v)
+      @gap_width = v
     end
     alias :gapWidth= :gap_width=
 
     def overlap=(v)
       RangeValidator.validate "BarChart.overlap", -100, 100, v
-      @overlap = (v)
+      @overlap = v
     end
 
     # The shape of the bars or columns
@@ -108,18 +110,18 @@ module Axlsx
     # Serializes the object
     # @param [String] str
     # @return [String]
-    def to_xml_string(str = '')
-      super(str) do
+    def to_xml_string(str = +'')
+      super do
         str << '<c:barChart>'
-        str << ('<c:barDir val="' << bar_dir.to_s << '"/>')
-        str << ('<c:grouping val="' << grouping.to_s << '"/>')
-        str << ('<c:varyColors val="' << vary_colors.to_s << '"/>')
+        str << '<c:barDir val="' << bar_dir.to_s << '"/>'
+        str << '<c:grouping val="' << grouping.to_s << '"/>'
+        str << '<c:varyColors val="' << vary_colors.to_s << '"/>'
         @series.each { |ser| ser.to_xml_string(str) }
         @d_lbls.to_xml_string(str) if @d_lbls
-        str << ('<c:overlap val="' << @overlap.to_s << '"/>') unless @overlap.nil?
-        str << ('<c:gapWidth val="' << @gap_width.to_s << '"/>') unless @gap_width.nil?
-        str << ('<c:shape val="' << @shape.to_s << '"/>') unless @shape.nil?
-        axes.to_xml_string(str, :ids => true)
+        str << '<c:overlap val="' << @overlap.to_s << '"/>' unless @overlap.nil?
+        str << '<c:gapWidth val="' << @gap_width.to_s << '"/>' unless @gap_width.nil?
+        str << '<c:shape val="' << @shape.to_s << '"/>' unless @shape.nil?
+        axes.to_xml_string(str, ids: true)
         str << '</c:barChart>'
         axes.to_xml_string(str)
       end
@@ -129,7 +131,17 @@ module Axlsx
     # category axes specified via axes[:val_axes] and axes[:cat_axis]
     # @return [Axes]
     def axes
-      @axes ||= Axes.new(:cat_axis => CatAxis, :val_axis => ValAxis)
+      @axes ||= begin
+        a = Axes.new(cat_axis: CatAxis, val_axis: ValAxis)
+
+        if bar_dir == :col
+          a[:val_axis].ax_pos = :l
+        else
+          a[:cat_axis].ax_pos = :l
+        end
+
+        a
+      end
     end
   end
 end

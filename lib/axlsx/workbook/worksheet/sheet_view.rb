@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Axlsx
   # View options for a worksheet.
   #
@@ -31,8 +33,8 @@ module Axlsx
     def initialize(options = {})
       # defaults
       @color_id = @top_left_cell = @pane = nil
-      @right_to_left = @show_formulas = @show_outline_symbols = @show_white_space = @tab_selected = @window_protection = false
-      @default_grid_color = @show_grid_lines = @show_row_col_headers = @show_ruler = @show_zeros = true
+      @right_to_left = @show_formulas = @show_white_space = @tab_selected = @window_protection = false
+      @default_grid_color = @show_grid_lines = @show_row_col_headers = @show_ruler = @show_zeros = @show_outline_symbols = true
       @zoom_scale = 100
       @zoom_scale_normal = @zoom_scale_page_layout_view = @zoom_scale_sheet_layout_view = @workbook_view_id = 0
       @selections = {}
@@ -48,7 +50,7 @@ module Axlsx
                             :view, :top_left_cell, :color_id, :zoom_scale
 
     # instance values that must be serialized as their own elements - e.g. not attributes.
-    CHILD_ELEMENTS = [:pane, :selections]
+    CHILD_ELEMENTS = [:pane, :selections].freeze
 
     # The pane object for the sheet view
     # @return [Pane]
@@ -156,47 +158,68 @@ module Axlsx
     # param [Hash] options
     # return [Selection]
     def add_selection(pane, options = {})
-      @selections[pane] = Selection.new(options.merge(:pane => pane))
+      @selections[pane] = Selection.new(options.merge(pane: pane))
     end
 
     # @see color_id
-    def color_id=(v); Axlsx::validate_unsigned_int(v); @color_id = v end
+    def color_id=(v)
+      Axlsx.validate_unsigned_int(v)
+      @color_id = v
+    end
 
     # @see top_left_cell
     def top_left_cell=(v)
-      cell = (v.class == Axlsx::Cell ? v.r_abs : v)
-      Axlsx::validate_string(cell)
+      cell = (v.instance_of?(Axlsx::Cell) ? v.r_abs : v)
+      Axlsx.validate_string(cell)
       @top_left_cell = cell
     end
 
     # @see view
-    def view=(v); Axlsx::validate_sheet_view_type(v); @view = v end
+    def view=(v)
+      Axlsx.validate_sheet_view_type(v)
+      @view = v
+    end
 
     # @see workbook_view_id
-    def workbook_view_id=(v); Axlsx::validate_unsigned_int(v); @workbook_view_id = v end
+    def workbook_view_id=(v)
+      Axlsx.validate_unsigned_int(v)
+      @workbook_view_id = v
+    end
 
     # @see zoom_scale
-    def zoom_scale=(v); Axlsx::validate_scale_0_10_400(v); @zoom_scale = v end
+    def zoom_scale=(v)
+      Axlsx.validate_scale_0_10_400(v)
+      @zoom_scale = v
+    end
 
     # @see zoom_scale_normal
-    def zoom_scale_normal=(v); Axlsx::validate_scale_0_10_400(v); @zoom_scale_normal = v end
+    def zoom_scale_normal=(v)
+      Axlsx.validate_scale_0_10_400(v)
+      @zoom_scale_normal = v
+    end
 
     # @see zoom_scale_page_layout_view
-    def zoom_scale_page_layout_view=(v); Axlsx::validate_scale_0_10_400(v); @zoom_scale_page_layout_view = v end
+    def zoom_scale_page_layout_view=(v)
+      Axlsx.validate_scale_0_10_400(v)
+      @zoom_scale_page_layout_view = v
+    end
 
     # @see zoom_scale_sheet_layout_view
-    def zoom_scale_sheet_layout_view=(v); Axlsx::validate_scale_0_10_400(v); @zoom_scale_sheet_layout_view = v end
+    def zoom_scale_sheet_layout_view=(v)
+      Axlsx.validate_scale_0_10_400(v)
+      @zoom_scale_sheet_layout_view = v
+    end
 
     # Serializes the data validation
     # @param [String] str
     # @return [String]
-    def to_xml_string(str = '')
+    def to_xml_string(str = +'')
       str << '<sheetViews>'
       str << '<sheetView '
       serialized_attributes str
       str << '>'
       @pane.to_xml_string(str) if @pane
-      @selections.each do |key, selection|
+      @selections.each_value do |selection|
         selection.to_xml_string(str)
       end
       str << '</sheetView>'

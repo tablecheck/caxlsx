@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Axlsx
   # This class details a border used in Office Open XML spreadsheet styles.
   class Border
@@ -41,20 +43,29 @@ module Axlsx
     attr_reader :prs
 
     # @see diagonalUp
-    def diagonal_up=(v) Axlsx::validate_boolean v; @diagonal_up = v end
+    def diagonal_up=(v)
+      Axlsx.validate_boolean v
+      @diagonal_up = v
+    end
     alias :diagonalUp= :diagonal_up=
 
     # @see diagonalDown
-    def diagonal_down=(v) Axlsx::validate_boolean v; @diagonal_down = v end
+    def diagonal_down=(v)
+      Axlsx.validate_boolean v
+      @diagonal_down = v
+    end
     alias :diagonalDown= :diagonal_down=
 
     # @see outline
-    def outline=(v) Axlsx::validate_boolean v; @outline = v end
+    def outline=(v)
+      Axlsx.validate_boolean v
+      @outline = v
+    end
 
     # Serializes the object
     # @param [String] str
     # @return [String]
-    def to_xml_string(str = '')
+    def to_xml_string(str = +'')
       str << '<border '
       serialized_attributes str
       str << '>'

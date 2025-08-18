@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Axlsx
   # The SheetProtection object manages worksheet protection options per sheet.
   class SheetProtection
@@ -65,7 +67,7 @@ module Axlsx
 
     # encodes password for protection locking
     def password=(v)
-      return if v == nil
+      return if v.nil?
 
       @password = create_password_hash(v)
     end
@@ -73,7 +75,7 @@ module Axlsx
     # Serialize the object
     # @param [String] str
     # @return [String]
-    def to_xml_string(str = '')
+    def to_xml_string(str = +'')
       serialized_tag('sheetProtection', str)
     end
 
@@ -85,27 +87,27 @@ module Axlsx
       encoded_password = encode_password(password)
 
       password_as_hex = [encoded_password].pack("v")
-      password_as_string = password_as_hex.unpack("H*").first.upcase
+      password_as_string = password_as_hex.unpack1("H*").upcase
 
       password_as_string[2..3] + password_as_string[0..1]
     end
 
     # Encodes a given password
     # Based on the algorithm provided by Daniel Rentz of OpenOffice.
-    # http://www.openoffice.org/sc/excelfileformat.pdf, Revision 1.42, page 115 (21.05.2012)
+    # https://www.openoffice.org/sc/excelfileformat.pdf, Revision 1.42, page 115 (21.05.2012)
     # @return [String]
     def encode_password(password)
       i = 0
-      chars = password.split(//)
+      chars = password.chars
       count = chars.size
 
       chars.collect! do |char|
         i += 1
-        char     = char.unpack('c')[0] << i # ord << i
+        char     = char.unpack1('c') << i # ord << i
         low_15   = char & 0x7fff
-        high_15  = char & 0x7fff << 15
-        high_15  = high_15 >> 15
-        char     = low_15 | high_15
+        high_15  = char & (0x7fff << 15)
+        high_15 >>= 15
+        low_15 | high_15
       end
 
       encoded_password = 0x0000

@@ -1,15 +1,17 @@
+# frozen_string_literal: true
+
 module Axlsx
   # The Storage class represents a storage object or stream in a compound file.
   class Storage
     # Packing for the Storage when pushing an array of items into a byte stream
     # Name, name length, type, color, left sibling, right sibling, child, classid, state, created, modified, sector, size
-    PACKING = "s32 s1 c2 l3 x16 x4 q2 l q".freeze
+    PACKING = "s32 s1 c2 l3 x16 x4 q2 l q"
 
     # storage types
     TYPES = {
-      :root => 5,
-      :stream => 2,
-      :storage => 1
+      root: 5,
+      stream: 2,
+      storage: 1
     }.freeze
 
     # Creates a byte string for this storage
@@ -31,9 +33,9 @@ module Axlsx
 
     # storage colors
     COLORS = {
-      :red => 0,
-      :black => 1
-    }
+      red: 0,
+      black: 1
+    }.freeze
 
     # The color of this node in the directory tree. Defaults to black if not specified
     # @return [Integer] color
@@ -61,7 +63,6 @@ module Axlsx
     def name=(v)
       @name = v.bytes.to_a << 0
       @name_size = @name.size * 2
-      @name
     end
 
     # The size of the stream
@@ -74,7 +75,7 @@ module Axlsx
     # @param [String] v The data for this storages stream
     # @return [Array]
     def data=(v)
-      Axlsx::validate_string(v)
+      Axlsx.validate_string(v)
       self.type = TYPES[:stream] unless @type
       @size = v.size
       @data = v.bytes.to_a
@@ -84,16 +85,16 @@ module Axlsx
     # @return [Integer] sector
     attr_accessor :sector
 
-    # The 0 based index in the directoies chain for this the left sibling of this storage.
+    # The 0 based index in the directories chain for this the left sibling of this storage.
 
     # @return [Integer] left
     attr_accessor :left
 
-    # The 0 based index in the directoies chain for this the right sibling of this storage.
+    # The 0 based index in the directories chain for this the right sibling of this storage.
     # @return [Integer] right
     attr_accessor :right
 
-    # The 0 based index in the directoies chain for the child of this storage.
+    # The 0 based index in the directories chain for the child of this storage.
     # @return [Integer] child
     attr_accessor :child
 
@@ -132,7 +133,7 @@ module Axlsx
       @left = @right = @child = -1
       @sector = @size = @created = @modified = 0
       options.each do |o|
-        self.send("#{o[0]}=", o[1]) if self.respond_to? "#{o[0]}="
+        send(:"#{o[0]}=", o[1]) if respond_to? :"#{o[0]}="
       end
       @color ||= COLORS[:black]
       @type ||= (data.nil? ? TYPES[:storage] : TYPES[:stream])

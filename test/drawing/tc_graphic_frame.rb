@@ -1,6 +1,8 @@
-require 'tc_helper.rb'
+# frozen_string_literal: true
 
-class TestGraphicFrame < Test::Unit::TestCase
+require 'tc_helper'
+
+class TestGraphicFrame < Minitest::Test
   def setup
     p = Axlsx::Package.new
     @ws = p.workbook.add_worksheet
@@ -8,11 +10,10 @@ class TestGraphicFrame < Test::Unit::TestCase
     @frame = @chart.graphic_frame
   end
 
-  def teardown
-  end
+  def teardown; end
 
   def test_initialization
-    assert(@frame.anchor.is_a?(Axlsx::TwoCellAnchor))
+    assert_kind_of(Axlsx::TwoCellAnchor, @frame.anchor)
     assert_equal(@frame.chart, @chart)
   end
 
@@ -22,6 +23,7 @@ class TestGraphicFrame < Test::Unit::TestCase
 
   def test_to_xml_has_correct_rId
     doc = Nokogiri::XML(@frame.to_xml_string)
+
     assert_equal @frame.rId, doc.xpath("//c:chart", doc.collect_namespaces).first["r:id"]
   end
 end

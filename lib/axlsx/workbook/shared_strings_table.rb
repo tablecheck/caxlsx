@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Axlsx
   # The Shared String Table class is responsible for managing and serializing common strings in a workbook.
   # While the ECMA-376 spec allows for both inline and shared strings it seems that at least some applications like iWorks Numbers
@@ -5,7 +7,7 @@ module Axlsx
   # As a developer, you should never need to directly work against this class. Simply set 'use_shared_strings'
   # on the package or workbook to generate a package that uses the shared strings table instead of inline strings.
   # @note Serialization performance is affected by using this serialization method so if you do not need interoperability
-  # it is recomended that you use the default inline string method of serialization.
+  # it is recommended that you use the default inline string method of serialization.
   class SharedStringsTable
     # The total number of strings in the workbook including duplicates
     # Empty cells are treated as blank strings
@@ -27,14 +29,14 @@ module Axlsx
     # @see Workbook#xml_space
     attr_reader :xml_space
 
-    # Creates a new Shared Strings Table agains an array of cells
+    # Creates a new Shared Strings Table against an array of cells
     # @param [Array] cells This is an array of all of the cells in the workbook
     # @param [Symbol] xml_space The xml:space behavior for the shared string table.
     def initialize(cells, xml_space = :preserve)
       @index = 0
       @xml_space = xml_space
       @unique_cells = {}
-      @shared_xml_string = ""
+      @shared_xml_string = +''
       shareable_cells = cells.flatten.select { |cell| cell.plain_string? || cell.contains_rich_text? }
       @count = shareable_cells.size
       resolve(shareable_cells)
@@ -43,16 +45,16 @@ module Axlsx
     # Serializes the object
     # @param [String] str
     # @return [String]
-    def to_xml_string(str = '')
-      Axlsx::sanitize(@shared_xml_string)
-      str << ('<?xml version="1.0" encoding="UTF-8"?><sst xmlns="' << XML_NS << '"')
-      str << (' count="' << @count.to_s << '" uniqueCount="' << unique_count.to_s << '"')
-      str << (' xml:space="' << xml_space.to_s << '">' << @shared_xml_string << '</sst>')
+    def to_xml_string(str = +'')
+      Axlsx.sanitize(@shared_xml_string)
+      str << '<?xml version="1.0" encoding="UTF-8"?><sst xmlns="' << XML_NS << '"'
+      str << ' count="' << @count.to_s << '" uniqueCount="' << unique_count.to_s << '"'
+      str << ' xml:space="' << xml_space.to_s << '">' << @shared_xml_string << '</sst>'
     end
 
     private
 
-    # Interate over all of the cells in the array.
+    # Iterate over all of the cells in the array.
     # if our unique cells array does not contain a sharable cell,
     # add the cell to our unique cells array and set the ssti attribute on the index of this cell in the shared strings table
     # if a sharable cell already exists in our unique_cells array, set the ssti attribute of the cell and move on.

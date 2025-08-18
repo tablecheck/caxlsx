@@ -1,41 +1,42 @@
+# frozen_string_literal: true
+
+require_relative 'axlsx/version'
+
+# gemspec dependencies
 require 'htmlentities'
-require 'axlsx/version.rb'
 require 'marcel'
-
-require 'axlsx/util/simple_typed_list.rb'
-require 'axlsx/util/constants.rb'
-require 'axlsx/util/validators.rb'
-require 'axlsx/util/accessors.rb'
-require 'axlsx/util/serialized_attributes'
-require 'axlsx/util/options_parser'
-require 'axlsx/util/mime_type_utils'
-require 'axlsx/util/zip_command'
-
-require 'axlsx/stylesheet/styles.rb'
-
-require 'axlsx/doc_props/app.rb'
-require 'axlsx/doc_props/core.rb'
-require 'axlsx/content_type/content_type.rb'
-require 'axlsx/rels/relationships.rb'
-
-require 'axlsx/drawing/drawing.rb'
-require 'axlsx/workbook/workbook.rb'
-require 'axlsx/package.rb'
-# required gems
 require 'nokogiri'
 require 'zip'
 
-# core dependencies
-require 'bigdecimal'
+# Ruby core dependencies
+require 'cgi'
 require 'set'
 require 'time'
+require 'uri'
 
-begin
-  if Gem.loaded_specs.has_key?("axlsx_styler")
-    raise StandardError.new("Please remove `axlsx_styler` from your Gemfile, the associated functionality is now built-in to `caxlsx` directly.")
-  end
-rescue
-  # Do nothing
+require_relative 'axlsx/util/simple_typed_list'
+require_relative 'axlsx/util/constants'
+require_relative 'axlsx/util/validators'
+require_relative 'axlsx/util/accessors'
+require_relative 'axlsx/util/serialized_attributes'
+require_relative 'axlsx/util/options_parser'
+require_relative 'axlsx/util/mime_type_utils'
+require_relative 'axlsx/util/buffered_zip_output_stream'
+require_relative 'axlsx/util/zip_command'
+
+require_relative 'axlsx/stylesheet/styles'
+
+require_relative 'axlsx/doc_props/app'
+require_relative 'axlsx/doc_props/core'
+require_relative 'axlsx/content_type/content_type'
+require_relative 'axlsx/rels/relationships'
+
+require_relative 'axlsx/drawing/drawing'
+require_relative 'axlsx/workbook/workbook'
+require_relative 'axlsx/package'
+
+if Gem.loaded_specs.key?("axlsx_styler")
+  raise StandardError, "Please remove `axlsx_styler` from your Gemfile, the associated functionality is now built-in to `caxlsx` directly."
 end
 
 # xlsx generation with charts, images, automated column width, customizable styles
@@ -50,7 +51,7 @@ module Axlsx
   #
   # Defining as a class method on Axlsx to refrain from monkeypatching Object for all users of this gem.
   def self.instance_values_for(object)
-    Hash[object.instance_variables.map { |name| [name.to_s[1..-1], object.instance_variable_get(name)] }]
+    object.instance_variables.to_h { |name| [name.to_s[1..], object.instance_variable_get(name)] }
   end
 
   # determines the cell range for the items provided
@@ -88,12 +89,10 @@ module Axlsx
     letters_str = name[/[A-Z]+/]
 
     # capitalization?!?
-    v = letters_str.reverse.chars.reduce({ :base => 1, :i => 0 }) do |val, c|
+    v = letters_str.reverse.chars.each_with_object({ base: 1, i: 0 }) do |c, val|
       val[:i] += ((c.bytes.first - 64) * val[:base])
 
       val[:base] *= 26
-
-      next val
     end
 
     col_index = (v[:i] - 1)
@@ -102,37 +101,51 @@ module Axlsx
 
     row_index = (numbers_str.to_i - 1)
 
-    return [col_index, row_index]
+    [col_index, row_index]
   end
 
   # converts the column index into alphabetical values.
   # @note This follows the standard spreadsheet convention of naming columns A to Z, followed by AA to AZ etc.
   # @return [String]
   def self.col_ref(index)
-    chars = ''
-    while index >= 26 do
-      index, char = index.divmod(26)
-      chars.prepend((char + 65).chr)
-      index -= 1
+    # Every row will call this for each column / cell and so we can cache result and avoid lots of small object
+    # allocations.
+    @col_ref ||= {}
+    @col_ref[index] ||= begin
+      i = index
+      chars = +''
+      while i >= 26
+        i, char = i.divmod(26)
+        chars.prepend((char + 65).chr)
+        i -= 1
+      end
+      chars.prepend((i + 65).chr)
+      chars.freeze
     end
-    chars.prepend((index + 65).chr)
-    chars
+  end
+
+  # converts the row index into string values.
+  # @note The spreadsheet rows are 1-based and the passed in index is 0-based, so we add 1.
+  # @return [String]
+  def self.row_ref(index)
+    @row_ref ||= {}
+    @row_ref[index] ||= (index + 1).to_s.freeze
   end
 
   # @return [String] The alpha(column)numeric(row) reference for this sell.
   # @example Relative Cell Reference
   #   ws.rows.first.cells.first.r #=> "A1"
   def self.cell_r(c_index, r_index)
-    col_ref(c_index) << (r_index + 1).to_s
+    col_ref(c_index) + row_ref(r_index)
   end
 
-  # Creates an array of individual cell references based on an excel reference range.
+  # Creates an array of individual cell references based on an Excel reference range.
   # @param [String] range A cell range, for example A1:D5
   # @return [Array]
   def self.range_to_a(range)
-    range.match(/^(\w+?\d+)\:(\w+?\d+)$/)
-    start_col, start_row = name_to_indices($1)
-    end_col,   end_row   = name_to_indices($2)
+    range =~ /^(\w+?\d+):(\w+?\d+)$/
+    start_col, start_row = name_to_indices(::Regexp.last_match(1))
+    end_col,   end_row   = name_to_indices(::Regexp.last_match(2))
     (start_row..end_row).to_a.map do |row_num|
       (start_col..end_col).to_a.map do |col_num|
         cell_r(col_num, row_num)
@@ -140,16 +153,16 @@ module Axlsx
     end
   end
 
-  # performs the increadible feat of changing snake_case to CamelCase
+  # performs the incredible feat of changing snake_case to CamelCase
   # @param [String] s The snake case string to camelize
   # @return [String]
   def self.camel(s = "", all_caps = true)
     s = s.to_s
     s = s.capitalize if all_caps
-    s.gsub(/_(.)/) { $1.upcase }
+    s.gsub(/_(.)/) { ::Regexp.last_match(1).upcase }
   end
 
-  # returns the provided string with all invalid control charaters
+  # returns the provided string with all invalid control characters
   # removed.
   # @param [String] str The string to process
   # @return [String]
@@ -167,18 +180,18 @@ module Axlsx
   # @param [Object] value The value to process
   # @return [Object]
   def self.booleanize(value)
-    if value == true || value == false
-      value ? 1 : 0
+    if BOOLEAN_VALUES.include?(value)
+      value ? '1' : '0'
     else
       value
     end
   end
 
   # utility method for performing a deep merge on a Hash
-  # @param [Hash] Hash to merge into
-  # @param [Hash] Hash to be added
+  # @param [Hash] first_hash Hash to merge into
+  # @param [Hash] second_hash Hash to be added
   def self.hash_deep_merge(first_hash, second_hash)
-    first_hash.merge(second_hash) do |key, this_val, other_val|
+    first_hash.merge(second_hash) do |_key, this_val, other_val|
       if this_val.is_a?(Hash) && other_val.is_a?(Hash)
         Axlsx.hash_deep_merge(this_val, other_val)
       else
@@ -189,7 +202,7 @@ module Axlsx
 
   # Instructs the serializer to not try to escape cell value input.
   # This will give you a huge speed bonus, but if you content has <, > or other xml character data
-  # the workbook will be invalid and excel will complain.
+  # the workbook will be invalid and Excel will complain.
   def self.trust_input
     @trust_input ||= false
   end
@@ -206,7 +219,7 @@ module Axlsx
   # See https://www.owasp.org/index.php/CSV_Injection for details.
   # @return [Boolean]
   def self.escape_formulas
-    !defined?(@escape_formulas) || @escape_formulas.nil? ? false : @escape_formulas
+    !defined?(@escape_formulas) || @escape_formulas.nil? ? true : @escape_formulas
   end
 
   # Sets whether to treat values starting with an equals sign as formulas or as literal strings.
@@ -214,5 +227,20 @@ module Axlsx
   def self.escape_formulas=(value)
     Axlsx.validate_boolean(value)
     @escape_formulas = value
+  end
+
+  # Returns a URI parser instance, preferring RFC2396_PARSER if available,
+  # otherwise falling back to DEFAULT_PARSER. This method ensures consistent
+  # URI parsing across different Ruby versions.
+  # This method can be removed when dropping compatibility for Ruby < 3.4
+  # See https://github.com/ruby/uri/pull/114 for details.
+  # @return [Object]
+  def self.uri_parser
+    @uri_parser ||=
+      if defined?(URI::RFC2396_PARSER)
+        URI::RFC2396_PARSER
+      else
+        URI::DEFAULT_PARSER
+      end
   end
 end

@@ -1,27 +1,28 @@
-require 'tc_helper.rb'
+# frozen_string_literal: true
 
-class TestCellProtection < Test::Unit::TestCase
+require 'tc_helper'
+
+class TestCellProtection < Minitest::Test
   def setup
     @item = Axlsx::CellProtection.new
   end
 
-  def teardown
-  end
+  def teardown; end
 
   def test_initialiation
-    assert_equal(@item.hidden, nil)
-    assert_equal(@item.locked, nil)
+    assert_nil(@item.hidden)
+    assert_nil(@item.locked)
   end
 
   def test_hidden
-    assert_raise(ArgumentError) { @item.hidden = -1 }
-    assert_nothing_raised { @item.hidden = false }
-    assert_equal(@item.hidden, false)
+    assert_raises(ArgumentError) { @item.hidden = -1 }
+    refute_raises { @item.hidden = false }
+    assert_false(@item.hidden)
   end
 
   def test_locked
-    assert_raise(ArgumentError) { @item.locked = -1 }
-    assert_nothing_raised { @item.locked = false }
-    assert_equal(@item.locked, false)
+    assert_raises(ArgumentError) { @item.locked = -1 }
+    refute_raises { @item.locked = false }
+    assert_false(@item.locked)
   end
 end
