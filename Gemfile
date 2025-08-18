@@ -13,8 +13,9 @@ group :test do
   gem 'simplecov', '>= 0.14.1'
   gem 'test-unit'
   gem 'webmock'
+  gem 'win32ole', platforms: :windows
 end
 
 group :profile do
-  gem 'ruby-prof', :platforms => :ruby
+  gem 'ruby-prof', platforms: :ruby
 end
