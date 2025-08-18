@@ -77,6 +77,9 @@ module Axlsx
   # shared strings namespace
   SHARED_STRINGS_R = "http://schemas.openxmlformats.org/officeDocument/2006/relationships/sharedStrings".freeze
 
+  # theme rels namespace
+  THEME_R = "http://schemas.openxmlformats.org/officeDocument/2006/relationships/theme".freeze
+
   # drawing rels namespace
   DRAWING_R = "http://schemas.openxmlformats.org/officeDocument/2006/relationships/drawing".freeze
 
@@ -131,6 +134,9 @@ module Axlsx
   # shared strings content type
   SHARED_STRINGS_CT = "application/vnd.openxmlformats-officedocument.spreadsheetml.sharedStrings+xml".freeze
 
+  # theme content type
+  THEME_CT = "application/vnd.openxmlformats-officedocument.theme+xml".freeze
+
   # core content type
   CORE_CT = "application/vnd.openxmlformats-package.core-properties+xml".freeze
 
@@ -184,6 +190,9 @@ module Axlsx
 
   # shared_strings  part
   SHARED_STRINGS_PN = "sharedStrings.xml".freeze
+
+  # theme part
+  THEME_PN = "theme/theme1.xml".freeze
 
   # app part
   APP_PN = "docProps/app.xml".freeze
@@ -397,7 +406,7 @@ module Axlsx
   # x09 Character Tabulation
   # @see http://www.codetable.net/asciikeycodes
   pattern = "\x0-\x08\x0B\x0C\x0E-\x1F"
-  pattern = pattern.respond_to?(:encode) ? pattern.encode('UTF-8') : pattern
+  pattern = pattern.encode('UTF-8') if pattern.respond_to?(:encode)
 
   # The regular expression used to remove control characters from worksheets
   CONTROL_CHARS = pattern.freeze

@@ -43,6 +43,7 @@ module Axlsx
   require 'axlsx/workbook/workbook_views'
   require 'axlsx/workbook/worksheet/worksheet.rb'
   require 'axlsx/workbook/shared_strings_table.rb'
+  require 'axlsx/workbook/theme.rb'
   require 'axlsx/workbook/defined_name.rb'
   require 'axlsx/workbook/defined_names.rb'
   require 'axlsx/workbook/worksheet/table_style_info.rb'
@@ -180,6 +181,12 @@ module Axlsx
     def styles
       yield @styles if block_given?
       @styles
+    end
+
+    # The theme associated with this workbook
+    # @return [Theme]
+    def theme
+      @theme ||= Theme.new
     end
 
     # An array that holds all cells with styles
@@ -358,6 +365,7 @@ module Axlsx
         r << Relationship.new(pivot_table.cache_definition, PIVOT_TABLE_CACHE_DEFINITION_R, PIVOT_TABLE_CACHE_DEFINITION_PN % (index + 1))
       end
       r << Relationship.new(self, STYLES_R, STYLES_PN)
+      r << Relationship.new(self, THEME_R, THEME_PN)
       if use_shared_strings
         r << Relationship.new(self, SHARED_STRINGS_R, SHARED_STRINGS_PN)
       end

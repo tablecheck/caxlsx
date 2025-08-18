@@ -39,7 +39,7 @@ module Axlsx
     # @param [Regexp] regex The regular expression to evaluate
     # @param [Any] v The value to validate.
     def self.validate(name, regex, v)
-      raise ArgumentError, (ERR_REGEX % [v.inspect, regex.to_s]) unless (v.respond_to?(:to_s) && v.to_s.match(regex))
+      raise ArgumentError, (ERR_REGEX % [v.inspect, regex.to_s]) unless v.respond_to?(:to_s) && v.to_s.match(regex)
     end
   end
 
@@ -68,7 +68,7 @@ module Axlsx
   # @para, [Any] v the value to validate
   # @raise [ArgumentError] raised if the value cannot be converted to an integer
   def self.validate_integerish(v)
-    raise ArgumentError, (ERR_INTEGERISH % v.inspect) unless (v.respond_to?(:to_i) && v.to_i.is_a?(Integer))
+    raise ArgumentError, (ERR_INTEGERISH % v.inspect) unless v.respond_to?(:to_i) && v.to_i.is_a?(Integer)
   end
 
   # Requires that the value is between -54000000 and 54000000
@@ -76,7 +76,7 @@ module Axlsx
   # @raise [ArgumentError] raised if the value cannot be converted to an integer between the allowed angle values for chart label rotation.
   # @return [Boolean] true if the data is valid
   def self.validate_angle(v)
-    raise ArgumentError, (ERR_ANGLE % v.inspect) unless (v.to_i >= -5400000 && v.to_i <= 5400000)
+    raise ArgumentError, (ERR_ANGLE % v.inspect) unless v.to_i >= -5400000 && v.to_i <= 5400000
   end
 
   # Validates an unsigned intger
@@ -236,14 +236,14 @@ module Axlsx
   # TABLE_CT, WORKBOOK_CT, APP_CT, RELS_CT, STYLES_CT, XML_CT, WORKSHEET_CT, SHARED_STRINGS_CT, CORE_CT, CHART_CT, DRAWING_CT, COMMENT_CT are allowed
   # @param [Any] v The value validated
   def self.validate_content_type(v)
-    RestrictionValidator.validate :content_type, [TABLE_CT, WORKBOOK_CT, APP_CT, RELS_CT, STYLES_CT, XML_CT, WORKSHEET_CT, SHARED_STRINGS_CT, CORE_CT, CHART_CT, JPEG_CT, GIF_CT, PNG_CT, DRAWING_CT, COMMENT_CT, VML_DRAWING_CT, PIVOT_TABLE_CT, PIVOT_TABLE_CACHE_DEFINITION_CT], v
+    RestrictionValidator.validate :content_type, [TABLE_CT, WORKBOOK_CT, APP_CT, RELS_CT, STYLES_CT, THEME_CT, XML_CT, WORKSHEET_CT, SHARED_STRINGS_CT, CORE_CT, CHART_CT, JPEG_CT, GIF_CT, PNG_CT, DRAWING_CT, COMMENT_CT, VML_DRAWING_CT, PIVOT_TABLE_CT, PIVOT_TABLE_CACHE_DEFINITION_CT], v
   end
 
   # Requires that the value is a valid relationship_type
   # XML_NS_R, TABLE_R, WORKBOOK_R, WORKSHEET_R, APP_R, RELS_R, CORE_R, STYLES_R, CHART_R, DRAWING_R, IMAGE_R, HYPERLINK_R, SHARED_STRINGS_R are allowed
   # @param [Any] v The value validated
   def self.validate_relationship_type(v)
-    RestrictionValidator.validate :relationship_type, [XML_NS_R, TABLE_R, WORKBOOK_R, WORKSHEET_R, APP_R, RELS_R, CORE_R, STYLES_R, CHART_R, DRAWING_R, IMAGE_R, HYPERLINK_R, SHARED_STRINGS_R, COMMENT_R, VML_DRAWING_R, COMMENT_R_NULL, PIVOT_TABLE_R, PIVOT_TABLE_CACHE_DEFINITION_R], v
+    RestrictionValidator.validate :relationship_type, [XML_NS_R, TABLE_R, WORKBOOK_R, WORKSHEET_R, APP_R, RELS_R, CORE_R, STYLES_R, THEME_R, CHART_R, DRAWING_R, IMAGE_R, HYPERLINK_R, SHARED_STRINGS_R, COMMENT_R, VML_DRAWING_R, COMMENT_R_NULL, PIVOT_TABLE_R, PIVOT_TABLE_CACHE_DEFINITION_R], v
   end
 
   # Requires that the value is a valid table element type
